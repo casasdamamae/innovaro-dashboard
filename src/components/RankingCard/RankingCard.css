@@ -1,22 +1,38 @@
 .ranking-card{
 
-    background:white;
+    background:#fff;
 
-    border-radius:12px;
+    border-radius:14px;
 
     padding:20px;
 
-    box-shadow:0 3px 12px rgba(0,0,0,.08);
+    box-shadow:0 4px 12px rgba(0,0,0,.10);
+
+    transition:.25s;
 
     height:450px;
+
+    display:flex;
+
+    flex-direction:column;
+
+}
+
+.ranking-card:hover{
+
+    box-shadow:0 10px 25px rgba(0,0,0,.15);
 
 }
 
 .ranking-card h3{
 
-    margin-bottom:20px;
+    margin:0 0 20px;
 
     color:#1565C0;
+
+    font-size:18px;
+
+    font-weight:600;
 
 }
 
@@ -24,7 +40,9 @@
 
     overflow-y:auto;
 
-    height:360px;
+    flex:1;
+
+    padding-right:5px;
 
 }
 
@@ -33,6 +51,8 @@
     display:flex;
 
     align-items:center;
+
+    gap:10px;
 
     padding:12px 8px;
 
@@ -50,33 +70,39 @@
 
 .ranking-posicao{
 
-    width:45px;
+    width:42px;
+
+    text-align:center;
 
     font-weight:bold;
 
     color:#1565C0;
 
-}
-
-.ranking-nome{
-
-    flex:1;
-
-    font-size:15px;
-
-}
-
-.ranking-valor{
-
-    font-weight:bold;
-
-    color:#2E7D32;
+    flex-shrink:0;
 
 }
 
 .ranking-info{
 
     flex:1;
+
+    min-width:0;
+
+}
+
+.ranking-nome{
+
+    font-size:15px;
+
+    font-weight:600;
+
+    color:#333;
+
+    white-space:nowrap;
+
+    overflow:hidden;
+
+    text-overflow:ellipsis;
 
 }
 
@@ -87,5 +113,167 @@
     color:#777;
 
     margin-top:3px;
+
+}
+
+.ranking-valor{
+
+    font-weight:bold;
+
+    color:#2E7D32;
+
+    text-align:right;
+
+    margin-left:10px;
+
+    flex-shrink:0;
+
+}
+
+/* Scroll */
+
+.ranking-list::-webkit-scrollbar{
+
+    width:7px;
+
+}
+
+.ranking-list::-webkit-scrollbar-thumb{
+
+    background:#1565C0;
+
+    border-radius:10px;
+
+}
+
+.ranking-list::-webkit-scrollbar-track{
+
+    background:#f0f0f0;
+
+}
+
+/* ===========================
+   TABLET
+=========================== */
+
+@media (max-width:992px){
+
+    .ranking-card{
+
+        height:420px;
+
+        padding:18px;
+
+    }
+
+}
+
+/* ===========================
+   CELULAR
+=========================== */
+
+@media (max-width:768px){
+
+    .ranking-card{
+
+        height:auto;
+
+        min-height:380px;
+
+        padding:15px;
+
+    }
+
+    .ranking-card h3{
+
+        text-align:center;
+
+        font-size:17px;
+
+    }
+
+    .ranking-list{
+
+        max-height:320px;
+
+    }
+
+    .ranking-item{
+
+        padding:10px 5px;
+
+    }
+
+    .ranking-posicao{
+
+        width:32px;
+
+        font-size:14px;
+
+    }
+
+    .ranking-nome{
+
+        font-size:14px;
+
+    }
+
+    .ranking-extra{
+
+        font-size:11px;
+
+    }
+
+    .ranking-valor{
+
+        font-size:13px;
+
+    }
+
+}
+
+/* ===========================
+   CELULAR PEQUENO
+=========================== */
+
+@media (max-width:480px){
+
+    .ranking-card{
+
+        min-height:340px;
+
+        padding:12px;
+
+    }
+
+    .ranking-card h3{
+
+        font-size:15px;
+
+    }
+
+    .ranking-list{
+
+        max-height:280px;
+
+    }
+
+    .ranking-posicao{
+
+        width:28px;
+
+    }
+
+    .ranking-nome{
+
+        font-size:13px;
+
+    }
+
+    .ranking-valor{
+
+        font-size:12px;
+
+    }
 
 }

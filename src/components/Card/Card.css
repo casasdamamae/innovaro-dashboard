@@ -1,20 +1,30 @@
 .card{
 
-    background:white;
+    background:#fff;
 
     border-radius:14px;
 
     padding:22px;
 
-    box-shadow:0 3px 10px rgba(0,0,0,.08);
+    box-shadow:0 3px 12px rgba(0,0,0,.08);
 
-    transition:.2s;
+    transition:.25s;
+
+    display:flex;
+
+    flex-direction:column;
+
+    justify-content:center;
+
+    min-height:165px;
 
 }
 
 .card:hover{
 
     transform:translateY(-4px);
+
+    box-shadow:0 8px 22px rgba(0,0,0,.12);
 
 }
 
@@ -32,13 +42,25 @@
 
 }
 
+.card-top h3{
+
+    margin:0;
+
+    font-size:17px;
+
+    font-weight:600;
+
+}
+
 .card h1{
 
     font-size:36px;
 
     color:#222;
 
-    margin-bottom:10px;
+    margin:0 0 10px;
+
+    word-break:break-word;
 
 }
 
@@ -50,7 +72,13 @@
 
 .icone{
 
-    font-size:28px;
+    font-size:30px;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
 
 }
 
@@ -99,5 +127,111 @@
 .neutro{
 
     color:#757575;
+
+}
+
+/* ===========================
+   TABLET
+=========================== */
+
+@media (max-width:992px){
+
+    .card{
+
+        min-height:150px;
+
+        padding:20px;
+
+    }
+
+    .card h1{
+
+        font-size:30px;
+
+    }
+
+    .icone{
+
+        font-size:28px;
+
+    }
+
+}
+
+/* ===========================
+   CELULAR
+=========================== */
+
+@media (max-width:768px){
+
+    .card{
+
+        padding:18px;
+
+        min-height:auto;
+
+    }
+
+    .card-top{
+
+        margin-bottom:10px;
+
+    }
+
+    .card-top h3{
+
+        font-size:15px;
+
+    }
+
+    .card h1{
+
+        font-size:28px;
+
+    }
+
+    .card small{
+
+        font-size:12px;
+
+    }
+
+    .icone{
+
+        font-size:26px;
+
+    }
+
+}
+
+/* ===========================
+   CELULAR PEQUENO
+=========================== */
+
+@media (max-width:480px){
+
+    .card{
+
+        padding:15px;
+
+    }
+
+    .card h1{
+
+        font-size:24px;
+
+    }
+
+    .card-top h3{
+
+        font-size:14px;
+
+    }
+
+    .icone{
+
+        font-size:22px;
+
+    }
 
 }
