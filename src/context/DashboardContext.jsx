@@ -84,7 +84,7 @@ export function DashboardProvider({ children }) {
 
             atualizar();
 
-        }, 30000);
+        }, 60000);
 
         return () => clearInterval(intervalo);
 
