@@ -9,6 +9,9 @@ import RankingCard from "../components/RankingCard/RankingCard";
 
 import { useDashboard } from "../context/DashboardContext";
 
+import { useEffect, useState } from "react";
+import UsuariosModal from "../components/UsuariosModal/UsuariosModal";
+
 import {
     FaMoneyBillWave,
     FaShoppingCart,
@@ -21,6 +24,27 @@ import {
 export default function Dashboard() {
 
     const { dados, loading } = useDashboard();
+    
+    const[usuariosAberto, setUsuariosAberto] = useState(false);
+
+    useEffect(() => {
+
+    function abrir() {
+
+        setUsuariosAberto(true);
+
+    }
+
+    window.addEventListener("abrirUsuarios", abrir);
+
+    return () => {
+
+        window.removeEventListener("abrirUsuarios", abrir);
+
+    };
+
+}, []);
+
 
     if (loading || !dados) {
 
@@ -167,7 +191,12 @@ export default function Dashboard() {
 
                 </div>
 
-            </main>
+        </main>
+
+        <UsuariosModal
+            aberto={usuariosAberto}
+            fechar={() => setUsuariosAberto(false)}
+        />
 
         </>
 

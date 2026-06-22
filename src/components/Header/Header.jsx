@@ -1,5 +1,7 @@
 import "./Header.css";
 
+import { FaUsers, FaSignOutAlt } from "react-icons/fa";
+
 import { useDashboard } from "../../context/DashboardContext";
 
 export default function Header() {
@@ -19,6 +21,8 @@ export default function Header() {
 
     } = useDashboard();
 
+    const usuario = JSON.parse(localStorage.getItem("usuario"));
+
     function telaCheia() {
 
         if (!document.fullscreenElement) {
@@ -30,6 +34,21 @@ export default function Header() {
             document.exitFullscreen();
 
         }
+
+    }
+
+    function abrirUsuarios() {
+
+        window.dispatchEvent(new Event("abrirUsuarios"));
+
+    }
+
+    function sair() {
+
+        localStorage.removeItem("token");
+        localStorage.removeItem("usuario");
+
+        window.location.reload();
 
     }
 
@@ -47,9 +66,17 @@ export default function Header() {
 
                 <div className="header-info">
 
-                    <span>Última atualização</span>
+                    <span>
 
-                    <strong>{new Date().toLocaleTimeString("pt-BR")}</strong>
+                        👤 {usuario?.usuario || "Admin"}
+
+                    </span>
+
+                    <strong>
+
+                        {new Date().toLocaleTimeString("pt-BR")}
+
+                    </strong>
 
                 </div>
 
@@ -62,13 +89,9 @@ export default function Header() {
                     <label>Data Inicial</label>
 
                     <input
-
                         type="date"
-
                         value={inicio}
-
                         onChange={(e)=>setInicio(e.target.value)}
-
                     />
 
                 </div>
@@ -78,13 +101,9 @@ export default function Header() {
                     <label>Data Final</label>
 
                     <input
-
                         type="date"
-
                         value={fim}
-
                         onChange={(e)=>setFim(e.target.value)}
-
                     />
 
                 </div>
@@ -94,25 +113,26 @@ export default function Header() {
                     <label>Loja</label>
 
                     <select
-
                         value={loja}
-
                         onChange={(e)=>setLoja(e.target.value)}
-
                     >
 
-                        {lojas.map((item)=>(
+                        {
 
-                            <option
-                                key={item.id}
-                                value={item.id}
-                            >
+                            lojas.map((item)=>(
 
-                                {item.nome}
+                                <option
+                                    key={item.id}
+                                    value={item.id}
+                                >
 
-                            </option>
+                                    {item.nome}
 
-                        ))}
+                                </option>
+
+                            ))
+
+                        }
 
                     </select>
 
@@ -126,15 +146,28 @@ export default function Header() {
 
                     </button>
 
+                    <button onClick={abrirUsuarios}>
+
+                        <FaUsers />
+
+                        &nbsp;Usuários
+
+                    </button>
+
                     <button
-
                         className="btn-fullscreen"
-
                         onClick={telaCheia}
-
                     >
 
                         📺 Tela Cheia
+
+                    </button>
+
+                    <button onClick={sair}>
+
+                        <FaSignOutAlt />
+
+                        &nbsp;Sair
 
                     </button>
 

@@ -1,0 +1,77 @@
+.usuarios-overlay{
+
+    position:fixed;
+
+    inset:0;
+
+    background:rgba(0,0,0,.45);
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+    z-index:99999;
+
+}
+
+.usuarios-modal{
+
+    width:900px;
+
+    background:white;
+
+    border-radius:10px;
+
+    padding:25px;
+
+}
+
+.usuarios-topo{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    margin-bottom:20px;
+
+}
+
+.usuarios-topo button{
+
+    border:none;
+
+    background:none;
+
+    cursor:pointer;
+
+    font-size:22px;
+
+}
+
+table{
+
+    width:100%;
+
+    border-collapse:collapse;
+
+}
+
+th,td{
+
+    padding:12px;
+
+    border-bottom:1px solid #ddd;
+
+}
+
+th{
+
+    background:#1565c0;
+
+    color:white;
+
+}
