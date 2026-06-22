@@ -22,6 +22,7 @@ export default function Header() {
     } = useDashboard();
 
     const usuario = JSON.parse(localStorage.getItem("usuario"));
+    const ehAdmin = usuario?.nivel === "ADMIN";
 
     function telaCheia() {
 
@@ -146,6 +147,8 @@ export default function Header() {
 
                     </button>
 
+            {    
+                ehAdmin && (    
                     <button onClick={abrirUsuarios}>
 
                         <FaUsers />
@@ -153,7 +156,8 @@ export default function Header() {
                         &nbsp;Usuários
 
                     </button>
-
+                )    
+            }
                     <button
                         className="btn-fullscreen"
                         onClick={telaCheia}
