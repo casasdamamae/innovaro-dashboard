@@ -18,6 +18,8 @@ export default function BarChartCard({
     horizontal = false
 }) {
 
+    const mobile = window.innerWidth <= 768;
+
     return (
 
         <div className="chart-card">
@@ -26,7 +28,7 @@ export default function BarChartCard({
 
             <ResponsiveContainer
                 width="100%"
-                height={380}
+                height={mobile ? 520 : 380}
             >
 
                 <BarChart
@@ -34,10 +36,11 @@ export default function BarChartCard({
                     layout={horizontal ? "vertical" : "horizontal"}
                     margin={{
                         top: 10,
-                        right: 20,
-                        left: 40,
+                        right: mobile ? 10 : 20,
+                        left: mobile ? 5 : 40,
                         bottom: 10
                     }}
+                    barCategoryGap={mobile ? "18%" : "30%"}
                 >
 
                     <CartesianGrid strokeDasharray="3 3" />
@@ -47,23 +50,38 @@ export default function BarChartCard({
                         <>
                             <XAxis
                                 type="number"
+                                tick={{ fontSize: mobile ? 10 : 12 }}
                             />
 
                             <YAxis
                                 type="category"
                                 dataKey={eixo}
-                                width={220}
+                                width={mobile ? 120 : 220}
                                 interval={0}
-                                
+                                tick={{
+                                    fontSize: mobile ? 10 : 12
+                                }}
                             />
+
                         </>
 
                     ) : (
 
                         <>
-                            <XAxis dataKey={eixo} />
 
-                            <YAxis />
+                            <XAxis
+                                dataKey={eixo}
+                                tick={{
+                                    fontSize: mobile ? 10 : 12
+                                }}
+                            />
+
+                            <YAxis
+                                tick={{
+                                    fontSize: mobile ? 10 : 12
+                                }}
+                            />
+
                         </>
 
                     )}
@@ -80,6 +98,7 @@ export default function BarChartCard({
                     <Bar
                         dataKey={valor}
                         radius={[6, 6, 6, 6]}
+                        barSize={mobile ? 16 : 24}
                     />
 
                 </BarChart>
