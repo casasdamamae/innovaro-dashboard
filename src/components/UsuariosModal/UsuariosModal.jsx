@@ -4,6 +4,10 @@ import "./UsuariosModal.css";
 
 export default function UsuariosModal({ aberto, fechar }) {
 
+    const [lojas, setLojas] = useState([]);
+    const [usuarioSelecionado, setUsuarioSelecionado] = useState(null);
+    const [lojasSelecionadas, setLojasSelecionadas] = useState([]);
+    
     const [usuarios, setUsuarios] = useState([]);
 
     const [usuario, setUsuario] = useState("");
@@ -148,11 +152,108 @@ export default function UsuariosModal({ aberto, fechar }) {
 
     }
 
+    async function carregarLojas() {
+
+    const token = localStorage.getItem("token");
+
+    const { data } = await api.get("/lojas", {
+
+        headers: {
+
+            Authorization: `Bearer ${token}`
+
+        }
+
+    });
+
+    setLojas(data);
+
+}
+
+async function abrirPermissoes(usuario) {
+
+    const token = localStorage.getItem("token");
+
+    const { data } = await api.get(
+
+        `/usuarios/${usuario.id}/lojas`,
+
+        {
+
+            headers: {
+
+                Authorization: `Bearer ${token}`
+
+            }
+
+        }
+
+    );
+
+    setUsuarioSelecionado(usuario);
+
+    setLojasSelecionadas(data);
+
+}
+
+function marcarLoja(id) {
+
+    if(lojasSelecionadas.includes(id)){
+
+        setLojasSelecionadas(
+
+            lojasSelecionadas.filter(x=>x!==id)
+
+        );
+
+    }else{
+
+        setLojasSelecionadas(
+
+            [...lojasSelecionadas,id]
+
+        );
+
+    }
+
+}
+
+async function salvarPermissoes(){
+
+    const token = localStorage.getItem("token");
+
+    await api.put(
+
+        `/usuarios/${usuarioSelecionado.id}/lojas`,
+
+        {
+
+            lojas: lojasSelecionadas
+
+        },
+
+        {
+
+            headers:{
+
+                Authorization:`Bearer ${token}`
+
+            }
+
+        }
+
+    );
+
+    alert("Permissões salvas.");
+
+}
+
     useEffect(() => {
 
         if (aberto) {
 
             carregar();
+            carregarLojas();
 
         }
 
@@ -298,13 +399,21 @@ export default function UsuariosModal({ aberto, fechar }) {
 
                                         <button
 
-                                            onClick={() => excluir(u.id)}
+                                            onClick={() => abrirPermissoes(u)}
 
                                         >
 
-                                            🗑
+                                            🏪 Lojas
 
                                         </button>
+
+                                        <button
+                                           onClick={() => excluir(u.id)}
+                                        
+                                        >
+                                             🗑
+
+                                        </button>     
 
                                     </td>
 
