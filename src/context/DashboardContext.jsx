@@ -21,7 +21,17 @@ export function DashboardProvider({ children }) {
 
         try {
 
-            const { data } = await api.get("/resumo/lojas");
+            const token = localStorage.getItem("token");
+
+            const { data } = await api.get("/resumo/lojas", {
+
+                headers: {
+
+                    Authorization: `Bearer ${token}`
+
+                }
+
+            });
 
             setLojas(data);
 
@@ -39,7 +49,15 @@ export function DashboardProvider({ children }) {
 
         try {
 
+            const token = localStorage.getItem("token");
+
             const { data } = await api.get("/resumo", {
+
+                headers: {
+
+                    Authorization: `Bearer ${token}`
+
+                },
 
                 params: {
 
@@ -77,14 +95,14 @@ export function DashboardProvider({ children }) {
 
     }, [inicio, fim, loja]);
 
-    // Atualização automática a cada 30 segundos
+    // Atualização automática
     useEffect(() => {
 
         const intervalo = setInterval(() => {
 
             atualizar();
 
-        }, 60000);
+        }, 120000); // 2 minutos
 
         return () => clearInterval(intervalo);
 
