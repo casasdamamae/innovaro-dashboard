@@ -12,6 +12,8 @@ export function DashboardProvider({ children }) {
 
     const [loja, setLoja] = useState("TODAS");
     const [lojas, setLojas] = useState([]);
+    const [fornecedor, setFornecedor] = useState("TODOS");
+    const [fornecedores, setFornecedores] = useState([]);
 
     const [dados, setDados] = useState(null);
 
@@ -43,6 +45,32 @@ export function DashboardProvider({ children }) {
 
     }
 
+    async function carregarFornecedores() {
+
+    try {
+
+        const token = localStorage.getItem("token");
+
+        const { data } = await api.get("/resumo/fornecedores", {
+
+            headers: {
+
+                Authorization: `Bearer ${token}`
+
+            }
+
+        });
+
+        setFornecedores(data);
+
+    } catch (erro) {
+
+        console.error(erro);
+
+    }
+
+}
+
     async function atualizar() {
 
         setLoading(true);
@@ -63,7 +91,8 @@ export function DashboardProvider({ children }) {
 
                     inicio,
                     fim,
-                    loja
+                    loja,
+                    fornecedor
 
                 }
 
@@ -85,6 +114,7 @@ export function DashboardProvider({ children }) {
     useEffect(() => {
 
         carregarLojas();
+        carregarFornecedores();
 
     }, []);
 
@@ -93,7 +123,7 @@ export function DashboardProvider({ children }) {
 
         atualizar();
 
-    }, [inicio, fim, loja]);
+    }, [inicio, fim, loja, fornecedor]);
 
     // Atualização automática
     useEffect(() => {
@@ -106,7 +136,7 @@ export function DashboardProvider({ children }) {
 
         return () => clearInterval(intervalo);
 
-    }, [inicio, fim, loja]);
+    }, [inicio, fim, loja, fornecedor]);
 
     return (
 
@@ -123,9 +153,13 @@ export function DashboardProvider({ children }) {
                 loja,
                 lojas,
 
+                fornecedor,
+                fornecedores,
+
                 setInicio,
                 setFim,
                 setLoja,
+                setFornecedor,
 
                 atualizar
 

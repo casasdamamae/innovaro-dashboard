@@ -13,9 +13,13 @@ export default function Header() {
         loja,
         lojas,
 
+        fornecedor,
+        fornecedores,
+
         setInicio,
         setFim,
         setLoja,
+        setFornecedor,
 
         atualizar
 
@@ -135,6 +139,36 @@ export default function Header() {
                             lojas.map((item) => (
 
                                 <option
+                                    key={item.id}
+                                    value={item.id}
+                                >
+
+                                    {item.nome}
+
+                                </option>
+
+                            ))
+
+                        }
+
+                    </select>
+
+                </div>
+
+                <div className="campo">
+
+                     <label>Fornecedor</label>
+
+                     <select
+                         value={fornecedor}
+                         onChange={(e) => setFornecedor(e.target.value)}
+                     >
+
+                         {
+
+                             fornecedores.map((item) => (
+
+                                 <option
                                     key={item.id}
                                     value={item.id}
                                 >
