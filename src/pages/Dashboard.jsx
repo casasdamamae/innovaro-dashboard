@@ -30,41 +30,41 @@ export default function Dashboard() {
 
     const [metasAberto, setMetasAberto] = useState(false);
 
-    useEffect(() => {
+     useEffect(() => {
 
-    function abrir() {
+        function abrir() {
 
-        setUsuariosAberto(true);
+            setUsuariosAberto(true);
 
-    }
+        }
 
-    useEffect(() => {
+        window.addEventListener("abrirUsuarios", abrir);
 
-    function abrir() {
+        return () => {
 
-        setMetasAberto(true);
+             window.removeEventListener("abrirUsuarios", abrir);
 
-    }
+        };
 
-    window.addEventListener("abrirMetas", abrir);
+ }, []);
 
-    return () => {
+     useEffect(() => {
 
-        window.removeEventListener("abrirMetas", abrir);
+         function abrir() {
 
-    };
+            setMetasAberto(true);
 
-}, []);
+        }
 
-    window.addEventListener("abrirUsuarios", abrir);
+         window.addEventListener("abrirMetas", abrir);
 
-    return () => {
+         return () => {
 
-        window.removeEventListener("abrirUsuarios", abrir);
+             window.removeEventListener("abrirMetas", abrir);
 
-    };
+        };
 
-}, []);
+ }, []);
 
 
     if (loading || !dados) {
@@ -217,6 +217,11 @@ export default function Dashboard() {
         <UsuariosModal
             aberto={usuariosAberto}
             fechar={() => setUsuariosAberto(false)}
+        />
+
+        <MetasModal
+            aberto={metasAberto}
+            fechar={() => setMetasAberto(false)}
         />
 
     </>
