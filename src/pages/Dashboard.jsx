@@ -2,6 +2,7 @@ import "./Dashboard.css";
 
 import Header from "../components/Header/Header";
 import Card from "../components/Card/Card";
+import MetaCard from "../components/MetaCard/MetaCard";
 
 import HoraChart from "../components/Charts/HoraChart";
 import BarChartCard from "../components/Charts/BarChartCard";
@@ -25,12 +26,11 @@ import {
 export default function Dashboard() {
 
     const { dados, loading } = useDashboard();
-    
-    const[usuariosAberto, setUsuariosAberto] = useState(false);
 
+    const [usuariosAberto, setUsuariosAberto] = useState(false);
     const [metasAberto, setMetasAberto] = useState(false);
 
-     useEffect(() => {
+    useEffect(() => {
 
         function abrir() {
 
@@ -42,30 +42,29 @@ export default function Dashboard() {
 
         return () => {
 
-             window.removeEventListener("abrirUsuarios", abrir);
+            window.removeEventListener("abrirUsuarios", abrir);
 
         };
 
- }, []);
+    }, []);
 
-     useEffect(() => {
+    useEffect(() => {
 
-         function abrir() {
+        function abrir() {
 
             setMetasAberto(true);
 
         }
 
-         window.addEventListener("abrirMetas", abrir);
+        window.addEventListener("abrirMetas", abrir);
 
-         return () => {
+        return () => {
 
-             window.removeEventListener("abrirMetas", abrir);
+            window.removeEventListener("abrirMetas", abrir);
 
         };
 
- }, []);
-
+    }, []);
 
     if (loading || !dados) {
 
@@ -82,6 +81,7 @@ export default function Dashboard() {
     }
 
     const resumo = dados.dashboard;
+    const meta = dados.metaDashboard;
 
     return (
 
@@ -90,8 +90,6 @@ export default function Dashboard() {
             <Header />
 
             <main className="dashboard">
-
-                {/* Cards */}
 
                 <div className="cards">
 
@@ -104,6 +102,8 @@ export default function Dashboard() {
                         crescimento={resumo.crescimento_faturamento}
                         icone={<FaMoneyBillWave color="#43A047" />}
                     />
+
+                    <MetaCard meta={meta} />
 
                     <Card
                         titulo="Vendas"
@@ -146,11 +146,7 @@ export default function Dashboard() {
 
                 </div>
 
-                {/* Faturamento por Hora */}
-
                 <HoraChart dados={dados.horas} />
-
-                {/* Loja + Setores */}
 
                 <div className="grid-charts">
 
@@ -172,8 +168,6 @@ export default function Dashboard() {
 
                 </div>
 
-                {/* Vendedores + Fornecedores */}
-
                 <div className="grid-charts">
 
                     <RankingCard
@@ -192,8 +186,6 @@ export default function Dashboard() {
 
                 </div>
 
-                {/* Produtos */}
-
                 <div className="grid-charts">
 
                     <RankingCard
@@ -203,6 +195,7 @@ export default function Dashboard() {
                         valor="faturamento"
                         extra="quantidade"
                     />
+
                     <RankingCard
                         titulo="📦 Produtos por Quantidade"
                         dados={dados.produtosQuantidade}
@@ -212,19 +205,19 @@ export default function Dashboard() {
 
                 </div>
 
-        </main>
+            </main>
 
-        <UsuariosModal
-            aberto={usuariosAberto}
-            fechar={() => setUsuariosAberto(false)}
-        />
+            <UsuariosModal
+                aberto={usuariosAberto}
+                fechar={() => setUsuariosAberto(false)}
+            />
 
-        <MetasModal
-            aberto={metasAberto}
-            fechar={() => setMetasAberto(false)}
-        />
+            <MetasModal
+                aberto={metasAberto}
+                fechar={() => setMetasAberto(false)}
+            />
 
-    </>
+        </>
 
     );
 
