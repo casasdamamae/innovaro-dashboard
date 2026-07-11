@@ -42,6 +42,7 @@ export default function HoraChart({ dados }) {
 
                     <Bar
                         dataKey="faturamento"
+                        fill="#CF0C0C"
                         radius={[6,6,0,0]}
                     />
 

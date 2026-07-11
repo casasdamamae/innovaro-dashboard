@@ -172,6 +172,7 @@ export default function BarChartCard({
 
                     <Bar
                         dataKey={valor}
+                        fill="#197602"                       
                         radius={[6, 6, 6, 6]}
                         barSize={mobile ? 16 : 24}
                     />
