@@ -158,6 +158,11 @@
 
 }
 
+.botoes-header .btn-pdf{
+    background:#e53935 !important;
+    color:white !important;
+}
+
 .btn-fullscreen{
 
     background:#1565C0;

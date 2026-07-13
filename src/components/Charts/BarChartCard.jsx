@@ -9,6 +9,8 @@ import {
 } from "recharts";
 
 import "./Chart.css";
+import { useRef, useEffect } from "react";
+
 
 export default function BarChartCard({
     titulo,
@@ -19,6 +21,8 @@ export default function BarChartCard({
 }) {
 
     const mobile = window.innerWidth <= 768;
+    const chartRef = useRef(null);
+
 
     function formatarValor(v) {
 
@@ -35,12 +39,49 @@ export default function BarChartCard({
 
     }
 
+    useEffect(() => {
+    if (!chartRef.current) return;
+
+    const svg = chartRef.current.querySelector("svg");
+    if (!svg) return;
+
+    const svgData = new XMLSerializer().serializeToString(svg);
+    const svgBlob = new Blob([svgData], { type: "image/svg+xml;charset=utf-8" });
+    const url = URL.createObjectURL(svgBlob);
+
+    const img = new Image();
+    img.onload = () => {
+        const canvas = document.createElement("canvas");
+        canvas.width = svg.clientWidth;
+        canvas.height = svg.clientHeight;
+
+        const ctx = canvas.getContext("2d");
+        ctx.drawImage(img, 0, 0);
+
+        const pngBase64 = canvas.toDataURL("image/png");
+
+        // 👉 Envia o gráfico para o Dashboard
+        if (titulo.includes("Faturamento por Loja")) {
+    window.dispatchEvent(
+        new CustomEvent("graficoFaturamentoLoja", { detail: pngBase64 })
+    );
+}
+
+        URL.revokeObjectURL(url);
+    };
+
+    img.src = url;
+
+}, [dados]);
+
+
     return (
 
         <div className="chart-card">
 
             <h3>{titulo}</h3>
 
+            <div ref={chartRef}> 
             <ResponsiveContainer
                 width="100%"
                 height={mobile ? 520 : 380}
@@ -180,6 +221,7 @@ export default function BarChartCard({
                 </BarChart>
 
             </ResponsiveContainer>
+            </div>
 
         </div>
 

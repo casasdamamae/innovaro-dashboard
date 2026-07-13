@@ -15,6 +15,8 @@ import UsuariosModal from "../components/UsuariosModal/UsuariosModal";
 import MetasModal from "../components/MetasModal/MetasModal";
 import MetasVendedoresModal from "../components/MetasVendedoresModal/MetasVendedoresModal";
 
+import { Page, Text, View, Document, StyleSheet, PDFDownloadLink } from '@react-pdf/renderer';
+
 import {
     FaMoneyBillWave,
     FaShoppingCart,
@@ -31,6 +33,23 @@ export default function Dashboard() {
     const [usuariosAberto, setUsuariosAberto] = useState(false);
     const [metasAberto, setMetasAberto] = useState(false);
     const [metasVendedoresAberto, setMetasVendedoresAberto] = useState(false);
+
+    const [graficoLoja, setGraficoLoja] = useState(null);
+
+    useEffect(() => {
+    function receberGrafico(e) {
+        setGraficoLoja(e.detail);
+    }
+
+    window.addEventListener("graficoFaturamentoLoja", receberGrafico);
+
+    return () => {
+        window.removeEventListener("graficoFaturamentoLoja", receberGrafico);
+    };
+}, []);
+
+
+
     useEffect(() => {
 
         function abrir() {
@@ -118,7 +137,7 @@ export default function Dashboard() {
 
         <>
 
-            <Header />
+            <Header graficoLoja={graficoLoja} />
 
             <main className="dashboard">
 
@@ -176,6 +195,8 @@ export default function Dashboard() {
                     />
 
                 </div>
+
+                
 
                 <HoraChart dados={dados.horas} />
 
