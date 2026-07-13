@@ -14,7 +14,7 @@ import { useDashboard } from "../../context/DashboardContext";
 
 const styles = StyleSheet.create({
   page: {
-    padding: 40,
+    padding: 20,
     backgroundColor: "#FAFAFA",
     fontSize: 12,
     fontFamily: "Helvetica"
@@ -38,7 +38,7 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: "bold",
     textAlign: "center",
-    marginBottom: 25,
+    marginBottom: 10,
     color: "#333"
   },
 
@@ -46,7 +46,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: "bold",
     marginBottom: 8,
-    marginTop: 20,
+    marginTop: 10,
     color: "#444"
   },
 
@@ -59,7 +59,7 @@ const styles = StyleSheet.create({
   linha: {
     flexDirection: "row",
     borderBottom: "1px solid #EEE",
-    padding: 8
+    padding: 5
   },
 
   colunaTitulo: {
@@ -140,17 +140,17 @@ const MeuPDF = ({ dados, graficoLoja }) => {
         </View>
 
         {graficoLoja && (
-          <View style={{ marginTop: 30 }}>
+          <View style={{ marginTop: 15 }}>
             <Text style={styles.secaoTitulo}>Gráfico — Faturamento por Loja</Text>
             <Image
               src={graficoLoja}
-              style={{ width: 500, height: 300, marginTop: 10 }}
+              style={{ width: 400, height: 250, marginTop: 10 }}
             />
           </View>
         )}
 
         {dados.lojas && (
-  <View style={{ marginTop: 30 }}>
+  <View style={{ marginTop: 15 }}>
 
     <Text style={styles.secaoTitulo}>Detalhamento — Faturamento por Loja</Text>
 
