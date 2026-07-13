@@ -144,13 +144,13 @@ const MeuPDF = ({ dados, graficoLoja }) => {
             <Text style={styles.secaoTitulo}>Gráfico — Faturamento por Loja</Text>
             <Image
               src={graficoLoja}
-              style={{ width: 400, height: 250, marginTop: 10 }}
+              style={{ width: 500, height: 350, marginTop: 10 }}
             />
           </View>
         )}
 
         {dados.lojas && (
-  <View style={{ marginTop: 15 }}>
+  <View style={{ marginTop: 190 }}>
 
     <Text style={styles.secaoTitulo}>Detalhamento — Faturamento por Loja</Text>
 
