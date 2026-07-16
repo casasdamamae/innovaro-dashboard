@@ -23,9 +23,10 @@ export default function Login() {
 
             });
 
-            localStorage.setItem("token", data.token);
+            localStorage.setItem("token", data.accessToken);
+            localStorage.setItem("refreshToken", data.refreshToken);
             localStorage.setItem("usuario", JSON.stringify(data.usuario));
-
+    
             window.location.reload();
 
         } catch {

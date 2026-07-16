@@ -277,7 +277,8 @@ export default function Header({ graficoLoja }) {
 
     function sair() {
 
-        localStorage.removeItem("token");
+        localStorage.removeItem("accessToken");
+        localStorage.removeItem("refreshToken");
         localStorage.removeItem("usuario");
 
         window.location.reload();
