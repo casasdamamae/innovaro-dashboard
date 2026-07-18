@@ -1,53 +1,30 @@
 import { useState } from "react";
-import api from "../../services/api";
+import { useAuthController } from "../../controllers/useAuthController";
 import "./Login.css";
 
 export default function Login() {
-
     const [usuario, setUsuario] = useState("");
     const [senha, setSenha] = useState("");
-    const [erro, setErro] = useState("");
 
-    async function entrar(e) {
+    const { entrar, erro, loading } = useAuthController();
 
+    async function handleSubmit(e) {
         e.preventDefault();
 
-        setErro("");
+        const autenticado = await entrar({
+            usuario,
+            senha
+        });
 
-        try {
-
-            const { data } = await api.post("/auth/login", {
-
-                usuario,
-                senha
-
-            });
-
-            localStorage.setItem("token", data.accessToken);
-            localStorage.setItem("refreshToken", data.refreshToken);
-            localStorage.setItem("usuario", JSON.stringify(data.usuario));
-    
+        if (autenticado) {
             window.location.reload();
-
-        } catch {
-
-            setErro("Usuário ou senha inválidos.");
-
         }
-
     }
 
     return (
-
         <div className="login">
-
-            <form
-                className="login-box"
-                onSubmit={entrar}
-            >
-
+            <form className="login-box" onSubmit={handleSubmit}>
                 <div className="login-logo">
-
                     <img
                         src="/logo-casas.png"
                         alt="Casas da Mamãe"
@@ -61,7 +38,6 @@ export default function Login() {
                         alt="Melhor das Casas"
                         className="login-logo-melhor"
                     />
-
                 </div>
 
                 <h2>Business Intelligence</h2>
@@ -79,30 +55,12 @@ export default function Login() {
                     onChange={(e) => setSenha(e.target.value)}
                 />
 
-                {
+                {erro && <span className="erro">{erro}</span>}
 
-                    erro && (
-
-                        <span className="erro">
-
-                            {erro}
-
-                        </span>
-
-                    )
-
-                }
-
-                <button>
-
-                    Entrar
-
+                <button type="submit" disabled={loading}>
+                    {loading ? "Entrando..." : "Entrar"}
                 </button>
-
             </form>
-
         </div>
-
     );
-
 }

@@ -1,24 +1,10 @@
-// import axios from "axios";
-
-// const api = axios.create({
-//     baseURL: "http://localhost:3000"
-// });
-
-// const refreshToken = localStorage.getItem("refreshToken");
-
-// const response = await api.post(
-//     "/auth/refresh",
-//     {
-//         refreshToken
-//     },
-// );
-
-// localStorage.setItem("token", response.data.accessToken);
-
-
-// export default api;
-
 import axios from "axios";
+import {
+    clearSession,
+    getAccessToken,
+    getRefreshToken,
+    setAccessToken
+} from "../models/session";
 
 
 
@@ -28,85 +14,60 @@ const api = axios.create({
 
 });
 
-// Adiciona automaticamente o Access Token em todas as requisições
 api.interceptors.request.use((config) => {
-    
-
-    const token = localStorage.getItem("token");
+    const token = getAccessToken();
 
     if (token) {
-
-        config.headers.Authorization = `Bearer ${token}`;
-
+        config.headers = {
+            ...config.headers,
+            Authorization: `Bearer ${token}`
+        };
     }
 
     return config;
-
 });
 
-// Quando receber 401 tenta renovar o Access Token
 api.interceptors.response.use(
-
     (response) => response,
-
     async (error) => {
-
         const originalRequest = error.config;
 
-        if (originalRequest.url === "/auth/refresh") {
-
+        if (originalRequest?.url === "/auth/refresh") {
             return Promise.reject(error);
-
         }
 
-        if (
-            error.response?.status === 401 &&
-            !originalRequest._retry
-        ) {
-
+        if (error.response?.status === 401 && !originalRequest?._retry) {
             originalRequest._retry = true;
 
             try {
+                const refreshToken = getRefreshToken();
 
-                const refreshToken =
-                    localStorage.getItem("refreshToken");
+                if (!refreshToken) {
+                    clearSession();
+                    return Promise.reject(error);
+                }
 
-                const resposta = await api.post(
+                const resposta = await api.post("/auth/refresh", {
+                    refreshToken
+                });
 
-                    "/auth/refresh",
+                const accessToken = resposta.data.accessToken;
+                setAccessToken(accessToken);
 
-                    {
-                        refreshToken
-                    }
-
-                );
-
-                localStorage.setItem(
-                    "token",
-                    resposta.data.accessToken
-                );
-
-                originalRequest.headers.Authorization =
-                    `Bearer ${resposta.data.accessToken}`;
+                originalRequest.headers = {
+                    ...originalRequest.headers,
+                    Authorization: `Bearer ${accessToken}`
+                };
 
                 return api(originalRequest);
-
-            } catch {
-
-                localStorage.removeItem("token");
-                localStorage.removeItem("refreshToken");
-
-                //window.location.replace("/login");
-                // window.location.href = "/";
-
+            } catch (refreshError) {
+                clearSession();
+                return Promise.reject(refreshError);
             }
-
         }
 
         return Promise.reject(error);
-
     }
-
 );
 
 export default api;
