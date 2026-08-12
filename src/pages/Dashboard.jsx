@@ -33,6 +33,8 @@ export default function Dashboard() {
         lojas,
         fornecedor,
         fornecedores,
+        setor,
+        setores,
         graficoLoja,
         usuariosAberto,
         metasAberto,
@@ -41,6 +43,7 @@ export default function Dashboard() {
         setFim,
         setLoja,
         setFornecedor,
+        setSetor,
         atualizar,
         registrarGraficoLoja,
         abrirUsuarios,
@@ -68,10 +71,13 @@ export default function Dashboard() {
                     lojas={lojas}
                     fornecedor={fornecedor}
                     fornecedores={fornecedores}
+                    setor={setor}
+                    setores={setores}
                     onInicioChange={setInicio}
                     onFimChange={setFim}
                     onLojaChange={setLoja}
                     onFornecedorChange={setFornecedor}
+                    onSetorChange={setSetor}
                     onRefresh={atualizar}
                     onOpenUsuarios={abrirUsuarios}
                     onOpenMetas={abrirMetas}
@@ -146,10 +152,13 @@ export default function Dashboard() {
                 lojas={lojas}
                 fornecedor={fornecedor}
                 fornecedores={fornecedores}
+                setor={setor}
+                setores={setores}
                 onInicioChange={setInicio}
                 onFimChange={setFim}
                 onLojaChange={setLoja}
                 onFornecedorChange={setFornecedor}
+                onSetorChange={setSetor}
                 onRefresh={atualizar}
                 onOpenUsuarios={abrirUsuarios}
                 onOpenMetas={abrirMetas}

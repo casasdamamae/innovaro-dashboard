@@ -9,8 +9,8 @@ import {
 
 
 const api = axios.create({
-    //baseURL: "http://localhost:3000"
-    baseURL: "https://innovaro-powerbi-api.onrender.com"
+    //baseLocalURL: import.meta.env.VITE_BASE_URL_LOCAL
+    baseURL: import.meta.env.VITE_BASE_URL
 
 });
 

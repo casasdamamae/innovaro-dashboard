@@ -16,10 +16,13 @@ export default function Header({
     lojas,
     fornecedor,
     fornecedores,
+    setor,
+    setores,
     onInicioChange,
     onFimChange,
     onLojaChange,
     onFornecedorChange,
+    onSetorChange,
     onRefresh,
     onOpenUsuarios,
     onOpenMetas,
@@ -115,6 +118,20 @@ export default function Header({
                         onChange={(e) => onFornecedorChange(e.target.value)}
                     >
                         {fornecedores.map((item) => (
+                            <option key={item.id} value={item.id}>
+                                {item.nome}
+                            </option>
+                        ))}
+                    </select>
+                </div>
+
+                <div className="campo">
+                    <label>Setor</label>
+                    <select
+                        value={setor}
+                        onChange={(e) => onSetorChange(e.target.value)}
+                    >
+                        {setores.map((item) => (
                             <option key={item.id} value={item.id}>
                                 {item.nome}
                             </option>

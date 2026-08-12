@@ -14,3 +14,8 @@ export async function fetchFornecedoresResumo() {
     const { data } = await api.get("/resumo/fornecedores");
     return data;
 }
+
+export async function fetchSetoresResumo() {
+    const { data } = await api.get("/resumo/setores");
+    return data;
+}

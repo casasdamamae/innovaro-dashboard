@@ -2,7 +2,8 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import {
     fetchDashboardResumo,
     fetchFornecedoresResumo,
-    fetchLojasResumo
+    fetchLojasResumo,
+    fetchSetoresResumo
 } from "../services/dashboardService";
 import { getStoredUser } from "../models/session";
 
@@ -15,6 +16,8 @@ export function useDashboardController() {
     const [lojas, setLojas] = useState([]);
     const [fornecedor, setFornecedor] = useState("TODOS");
     const [fornecedores, setFornecedores] = useState([]);
+    const [setor, setSetor] = useState("TODOS");
+    const [setores, setSetores] = useState([]);
 
     const [dados, setDados] = useState(null);
     const [loading, setLoading] = useState(false);
@@ -28,13 +31,15 @@ export function useDashboardController() {
 
     const carregarListas = useCallback(async () => {
         try {
-            const [lojasData, fornecedoresData] = await Promise.all([
+            const [lojasData, fornecedoresData, setoresData] = await Promise.all([
                 fetchLojasResumo(),
-                fetchFornecedoresResumo()
+                fetchFornecedoresResumo(),
+                fetchSetoresResumo()
             ]);
 
             setLojas(lojasData);
             setFornecedores(fornecedoresData);
+            setSetores(setoresData);
         } catch (error) {
             console.error(error);
         }
@@ -48,7 +53,8 @@ export function useDashboardController() {
                 inicio,
                 fim,
                 loja,
-                fornecedor
+                fornecedor,
+                setor
             });
 
             setDados(data);
@@ -57,7 +63,7 @@ export function useDashboardController() {
         } finally {
             setLoading(false);
         }
-    }, [fim, fornecedor, inicio, loja]);
+    }, [fim, fornecedor, inicio, loja, setor]);
 
     useEffect(() => {
         const timer = setTimeout(() => {
@@ -121,6 +127,8 @@ export function useDashboardController() {
         lojas,
         fornecedor,
         fornecedores,
+        setor,
+        setores,
         graficoLoja,
         usuariosAberto,
         metasAberto,
@@ -129,6 +137,7 @@ export function useDashboardController() {
         setFim,
         setLoja,
         setFornecedor,
+        setSetor,
         atualizar,
         registrarGraficoLoja,
         abrirUsuarios,
