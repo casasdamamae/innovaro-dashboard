@@ -2,10 +2,12 @@ import "./Header.css";
 
 import { useEffect, useMemo, useState } from "react";
 import { PDFDownloadLink } from "@react-pdf/renderer";
-import { FaUsers, FaBullseye, FaSignOutAlt } from "react-icons/fa";
+import { FaUsers, FaBullseye, FaSignOutAlt, FaChartBar } from "react-icons/fa";
 
 import ReportDocument from "./ReportDocument";
 import type { OpcaoFiltro, Resumo, UsuarioSessao } from "../../models/types";
+
+export type SecaoPainel = "dashboard" | "usuarios";
 
 type HeaderProps = {
     usuario: UsuarioSessao | null;
@@ -26,7 +28,8 @@ type HeaderProps = {
     onSetorChange: (valor: string) => void;
     isRefreshing?: boolean;
     onRefresh: () => void;
-    onOpenUsuarios: () => void;
+    secao: SecaoPainel;
+    onTrocarSecao: () => void;
     onOpenMetas: () => void;
     onOpenMetasVendedores: () => void;
     onLogout: () => void;
@@ -51,7 +54,8 @@ export default function Header({
     onSetorChange,
     isRefreshing = false,
     onRefresh,
-    onOpenUsuarios,
+    secao,
+    onTrocarSecao,
     onOpenMetas,
     onOpenMetasVendedores,
     onLogout
@@ -174,9 +178,18 @@ export default function Header({
 
                     {ehAdmin && (
                         <>
-                            <button onClick={onOpenUsuarios}>
-                                <FaUsers />
-                                &nbsp;Usuários
+                            <button type="button" onClick={onTrocarSecao}>
+                                {secao === "usuarios" ? (
+                                    <>
+                                        <FaChartBar />
+                                        &nbsp;Dashboard
+                                    </>
+                                ) : (
+                                    <>
+                                        <FaUsers />
+                                        &nbsp;Administração de Usuários
+                                    </>
+                                )}
                             </button>
 
                             <button onClick={onOpenMetas}>

@@ -1,18 +1,18 @@
 import "./Dashboard.css";
 
-import type { ReactNode } from "react";
+import { useState, type ReactNode } from "react";
 import { useDashboard } from "../../context/dashboardContext";
 import { encerrarSessao } from "../../models/session";
 import type { Resumo } from "../../models/types";
 
-import Header from "../../components/Header/Header";
+import Header, { type SecaoPainel } from "../../components/Header/Header";
 import Card from "../../components/Card/Card";
 import MetaCard from "../../components/MetaCard/MetaCard";
 import HoraChart from "../../components/Charts/HoraChart";
 import BarChartCard from "../../components/Charts/BarChartCard";
 import RankingCard from "../../components/RankingCard/RankingCard";
-import UsuariosModal from "../../components/UsuariosModal/UsuariosModal";
 import MetasModal from "../../components/MetasModal/MetasModal";
+import Usuarios from "../Usuarios/Usuarios";
 import MetasVendedoresModal from "../../components/MetasVendedoresModal/MetasVendedoresModal";
 
 import {
@@ -170,7 +170,6 @@ export default function Dashboard() {
         setor,
         setores,
         graficoLoja,
-        usuariosAberto,
         metasAberto,
         metasVendedoresAberto,
         setInicio,
@@ -180,13 +179,17 @@ export default function Dashboard() {
         setSetor,
         atualizar,
         registrarGraficoLoja,
-        abrirUsuarios,
-        fecharUsuarios,
         abrirMetas,
         fecharMetas,
         abrirMetasVendedores,
         fecharMetasVendedores
     } = useDashboard();
+
+    const [secao, setSecao] = useState<SecaoPainel>("dashboard");
+
+    function trocarSecao() {
+        setSecao((atual) => (atual === "dashboard" ? "usuarios" : "dashboard"));
+    }
 
     return (
         <>
@@ -208,7 +211,8 @@ export default function Dashboard() {
                 onFornecedorChange={setFornecedor}
                 onSetorChange={setSetor}
                 onRefresh={atualizar}
-                onOpenUsuarios={abrirUsuarios}
+                secao={secao}
+                onTrocarSecao={trocarSecao}
                 onOpenMetas={abrirMetas}
                 onOpenMetasVendedores={abrirMetasVendedores}
                 onLogout={encerrarSessao}
@@ -216,7 +220,9 @@ export default function Dashboard() {
             />
 
             <main className="dashboard">
-                {isInitialLoading ? (
+                {secao === "usuarios" ? (
+                    <Usuarios />
+                ) : isInitialLoading ? (
                     <h2>Carregando dashboard...</h2>
                 ) : erroInicial || !dados ? (
                     <div className="dashboard-estado">
@@ -233,7 +239,6 @@ export default function Dashboard() {
                 )}
             </main>
 
-            <UsuariosModal aberto={usuariosAberto} fechar={fecharUsuarios} />
             <MetasModal aberto={metasAberto} fechar={fecharMetas} />
             <MetasVendedoresModal
                 aberto={metasVendedoresAberto}

@@ -1,0 +1,70 @@
+.confirmacao-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 99999;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: rgba(0, 0, 0, 0.45);
+}
+
+.confirmacao-modal {
+    width: 420px;
+    max-width: 95%;
+    padding: 25px;
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
+}
+
+.confirmacao-modal h2 {
+    margin: 0 0 12px;
+    color: #1565c0;
+    font-size: 20px;
+}
+
+.confirmacao-modal p {
+    margin: 0 0 24px;
+    color: #333;
+    font-size: 15px;
+    line-height: 1.4;
+}
+
+.confirmacao-acoes {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+}
+
+.confirmacao-acoes button {
+    height: 42px;
+    padding: 0 18px;
+    border-radius: 8px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.confirmacao-acoes button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.confirmacao-cancelar {
+    border: 2px solid #1565c0;
+    background: #fff;
+    color: #1565c0;
+}
+
+.confirmacao-cancelar:hover:not(:disabled) {
+    background: #e3f2fd;
+}
+
+.confirmacao-confirmar {
+    border: none;
+    background: #e53935;
+    color: #fff;
+}
+
+.confirmacao-confirmar:hover:not(:disabled) {
+    background: #c62828;
+}

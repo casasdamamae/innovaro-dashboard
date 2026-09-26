@@ -137,11 +137,26 @@ export type UsuarioAdmin = {
     ativo: boolean;
 };
 
+export type PaginaUsuarios = {
+    dados: UsuarioAdmin[];
+    pagina: number;
+    limite: number;
+    total: number;
+    totalPaginas: number;
+};
+
 export type NovoUsuario = {
     usuario: string;
     senha: string;
     nivel: string;
     loja: string;
+};
+
+export type AtualizarUsuario = {
+    ativo?: 0 | 1;
+    loja?: string;
+    nivel?: string;
+    senha?: string;
 };
 
 export type Loja = {

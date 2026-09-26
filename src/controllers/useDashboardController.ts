@@ -28,7 +28,6 @@ export type DashboardController = {
     setor: string;
     setores: OpcaoFiltro[];
     graficoLoja: string | null;
-    usuariosAberto: boolean;
     metasAberto: boolean;
     metasVendedoresAberto: boolean;
     setInicio: Dispatch<SetStateAction<string>>;
@@ -38,8 +37,6 @@ export type DashboardController = {
     setSetor: Dispatch<SetStateAction<string>>;
     atualizar: () => Promise<void>;
     registrarGraficoLoja: (imagem: string) => void;
-    abrirUsuarios: () => void;
-    fecharUsuarios: () => void;
     abrirMetas: () => void;
     fecharMetas: () => void;
     abrirMetasVendedores: () => void;
@@ -63,7 +60,6 @@ export function useDashboardController(): DashboardController {
     const [erroInicial, setErroInicial] = useState(false);
     const [graficoLoja, setGraficoLoja] = useState<string | null>(null);
 
-    const [usuariosAberto, setUsuariosAberto] = useState(false);
     const [metasAberto, setMetasAberto] = useState(false);
     const [metasVendedoresAberto, setMetasVendedoresAberto] = useState(false);
 
@@ -183,14 +179,6 @@ export function useDashboardController(): DashboardController {
         setGraficoLoja(imagem);
     }, []);
 
-    function abrirUsuarios() {
-        setUsuariosAberto(true);
-    }
-
-    function fecharUsuarios() {
-        setUsuariosAberto(false);
-    }
-
     function abrirMetas() {
         setMetasAberto(true);
     }
@@ -222,7 +210,6 @@ export function useDashboardController(): DashboardController {
         setor,
         setores,
         graficoLoja,
-        usuariosAberto,
         metasAberto,
         metasVendedoresAberto,
         setInicio,
@@ -232,8 +219,6 @@ export function useDashboardController(): DashboardController {
         setSetor,
         atualizar,
         registrarGraficoLoja,
-        abrirUsuarios,
-        fecharUsuarios,
         abrirMetas,
         fecharMetas,
         abrirMetasVendedores,
