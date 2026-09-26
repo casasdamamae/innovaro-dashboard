@@ -1,0 +1,255 @@
+.usuarios-pagina h2 {
+    margin: 0 0 20px;
+    color: #1565c0;
+}
+
+.usuarios-colunas {
+    display: grid;
+    grid-template-columns: minmax(0, 65fr) minmax(0, 35fr);
+    gap: 20px;
+    align-items: start;
+}
+
+.usuarios-card {
+    background: #fff;
+    border-radius: 12px;
+    padding: 25px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.08);
+    min-width: 0;
+}
+
+.usuarios-listagem {
+    overflow-x: auto;
+}
+
+.usuarios-formulario {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.usuarios-formulario input:not([type="radio"]),
+.usuarios-formulario select {
+    width: 100%;
+    height: 42px;
+    padding: 0 12px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 15px;
+}
+
+.usuarios-formulario input:not([type="radio"]):focus,
+.usuarios-formulario select:focus {
+    outline: none;
+    border-color: #1565c0;
+}
+
+.usuarios-formulario select:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.usuarios-campo {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.usuarios-login {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.usuarios-campo-titulo {
+    font-size: 14px;
+    font-weight: 700;
+    color: #1565c0;
+}
+
+.usuarios-niveis {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 12px;
+}
+
+.usuarios-pilula {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 42px;
+    padding: 0 18px;
+    border: 2px solid;
+    border-radius: 8px;
+    background: #fff;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    user-select: none;
+}
+
+.usuarios-pilula input {
+    appearance: none;
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.usuarios-pilula:has(input:focus-visible) {
+    outline: 2px solid currentColor;
+    outline-offset: 2px;
+}
+
+.usuarios-pilula:has(input:disabled) {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.usuarios-pilula-admin {
+    border-color: #1565c0;
+    color: #1565c0;
+}
+
+.usuarios-pilula-admin:has(input:checked) {
+    background: #1565c0;
+    color: #fff;
+}
+
+.usuarios-pilula-consulta {
+    border-color: #43a047;
+    color: #43a047;
+}
+
+.usuarios-pilula-consulta:has(input:checked) {
+    background: #43a047;
+    color: #fff;
+}
+
+.usuarios-pilula-ativo {
+    border-color: #43a047;
+    color: #43a047;
+}
+
+.usuarios-pilula-ativo:has(input:checked) {
+    background: #43a047;
+    color: #fff;
+}
+
+.usuarios-pilula-inativo {
+    border-color: #e53935;
+    color: #e53935;
+}
+
+.usuarios-pilula-inativo:has(input:checked) {
+    background: #e53935;
+    color: #fff;
+}
+
+.usuarios-formulario button {
+    height: 42px;
+    border: none;
+    border-radius: 6px;
+    background: #1565c0;
+    color: #fff;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.usuarios-formulario button:hover {
+    background: #0d47a1;
+}
+
+.usuarios-formulario button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.usuarios-formulario input[readonly] {
+    background: #f3f3f3;
+    color: #555;
+}
+
+.usuarios-acoes-form {
+    display: flex;
+    gap: 10px;
+}
+
+.usuarios-acoes-form button {
+    flex: 1;
+}
+
+.usuarios-formulario button.usuarios-cancelar {
+    background: #fff;
+    color: #1565c0;
+    border: 2px solid #1565c0;
+}
+
+.usuarios-formulario button.usuarios-cancelar:hover {
+    background: #e3f2fd;
+}
+
+.usuarios-acoes {
+    display: flex;
+    gap: 8px;
+}
+
+.usuarios-listagem td button.usuarios-editar {
+    background: #1565c0;
+}
+
+.usuarios-listagem td button.usuarios-editar:hover {
+    background: #0d47a1;
+}
+
+.usuarios-paginacao {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-top: 16px;
+    flex-wrap: wrap;
+}
+
+.usuarios-paginacao p {
+    margin: 0;
+    font-size: 14px;
+    color: #333;
+}
+
+.usuarios-paginacao-botoes {
+    display: flex;
+    gap: 8px;
+}
+
+.usuarios-paginacao button {
+    height: 36px;
+    border: none;
+    border-radius: 6px;
+    padding: 0 14px;
+    background: #1565c0;
+    color: #fff;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.usuarios-paginacao button:hover {
+    background: #0d47a1;
+}
+
+.usuarios-paginacao button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+@media (max-width: 992px) {
+    .usuarios-colunas {
+        grid-template-columns: 1fr;
+    }
+}
