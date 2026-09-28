@@ -121,8 +121,7 @@ export default function MetasMensaisCard() {
                         <tr>
                             <th>Loja</th>
                             <th>Meta Mensal</th>
-                            <th>Sábado</th>
-                            <th>Domingo</th>
+                            <th className="metas-fim-semana-titulo">Fim de Semana</th>
                             <th>Feriados</th>
                         </tr>
                     </thead>
@@ -138,31 +137,43 @@ export default function MetasMensaisCard() {
                                         }
                                     />
                                 </td>
-                                <td>
-                                    <input
-                                        type="checkbox"
-                                        checked={meta.abre_sabado === 1}
-                                        onChange={(e) =>
+                                <td className="metas-fim-semana">
+                                    <button
+                                        type="button"
+                                        className={
+                                            meta.abre_sabado === 1
+                                                ? "metas-dia metas-dia-selecionado"
+                                                : "metas-dia"
+                                        }
+                                        aria-pressed={meta.abre_sabado === 1}
+                                        onClick={() =>
                                             atualizarMeta(
                                                 index,
                                                 "abre_sabado",
-                                                e.target.checked ? 1 : 0
+                                                meta.abre_sabado === 1 ? 0 : 1
                                             )
                                         }
-                                    />
-                                </td>
-                                <td>
-                                    <input
-                                        type="checkbox"
-                                        checked={meta.abre_domingo === 1}
-                                        onChange={(e) =>
+                                    >
+                                        Sábado
+                                    </button>
+                                    <button
+                                        type="button"
+                                        className={
+                                            meta.abre_domingo === 1
+                                                ? "metas-dia metas-dia-selecionado"
+                                                : "metas-dia"
+                                        }
+                                        aria-pressed={meta.abre_domingo === 1}
+                                        onClick={() =>
                                             atualizarMeta(
                                                 index,
                                                 "abre_domingo",
-                                                e.target.checked ? 1 : 0
+                                                meta.abre_domingo === 1 ? 0 : 1
                                             )
                                         }
-                                    />
+                                    >
+                                        Domingo
+                                    </button>
                                 </td>
                                 <td>
                                     <CampoInteiro
