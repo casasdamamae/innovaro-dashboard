@@ -14,7 +14,3 @@ export function formatNumber(value: ValorFormatavel) {
 export function formatPercent(value: ValorFormatavel) {
     return Number(value ?? 0).toFixed(2);
 }
-
-export function formatStatusLabel(status: string | null | undefined) {
-    return String(status ?? "").replaceAll("_", " ");
-}
