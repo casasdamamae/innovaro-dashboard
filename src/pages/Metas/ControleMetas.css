@@ -46,16 +46,31 @@
 }
 
 .metas-card-topo {
-    display: flex;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-rows: auto auto;
+    column-gap: 12px;
     align-items: center;
-    justify-content: space-between;
-    gap: 12px;
     margin-bottom: 16px;
-    flex-wrap: wrap;
+}
+
+.metas-card-titulo {
+    display: contents;
 }
 
 .metas-card-topo h3 {
+    grid-column: 1;
+    grid-row: 1;
     margin: 0;
+}
+
+.metas-total {
+    grid-column: 1;
+    grid-row: 2;
+    margin: 2px 0 0;
+    font-size: 13px;
+    font-weight: 400;
+    color: #6b7280;
 }
 
 .metas-linha-mes {
@@ -229,6 +244,11 @@
     max-width: 100%;
 }
 
+.metas-loja-nome {
+    font-weight: 700;
+}
+
+.metas-card input[type="text"],
 .metas-card input[type="number"] {
     width: 100%;
     height: 42px;
@@ -240,6 +260,7 @@
     color: #333;
 }
 
+.metas-card input[type="text"]:focus,
 .metas-card input[type="number"]:focus {
     outline: none;
     border-color: #1565c0;
@@ -250,44 +271,48 @@
 }
 
 .metas-paginacao {
+    grid-column: 2;
+    grid-row: 1;
     display: flex;
     align-items: center;
     justify-content: flex-end;
-    gap: 12px;
-    margin-left: auto;
-    flex-wrap: wrap;
-}
-
-.metas-paginacao p {
-    margin: 0;
-    font-size: 14px;
-    font-weight: 400;
-    color: #333;
-}
-
-.metas-paginacao-botoes {
-    display: flex;
-    gap: 8px;
+    gap: 4px;
 }
 
 .metas-paginacao button {
-    height: 36px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    padding: 0;
     border: none;
     border-radius: 6px;
-    padding: 0 14px;
-    background: #1565c0;
-    color: #fff;
+    background: transparent;
+    color: var(--color-primary);
     cursor: pointer;
-    font-weight: 600;
 }
 
-.metas-paginacao button:hover {
-    background: #0d47a1;
+.metas-paginacao button:hover:not(:disabled) {
+    background: var(--color-primary-light);
+}
+
+.metas-paginacao button:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
 }
 
 .metas-paginacao button:disabled {
-    opacity: 0.5;
+    opacity: 0.35;
     cursor: not-allowed;
+}
+
+.metas-pagina-indicador {
+    min-width: 4.75rem;
+    text-align: center;
+    font-size: 14px;
+    font-variant-numeric: tabular-nums;
+    color: #333;
 }
 
 .metas-salvar {

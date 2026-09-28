@@ -2,7 +2,9 @@ import { useCallback, useEffect, useState } from "react";
 import { fetchLojas } from "../../services/usersService";
 import { fetchMetasMensais, saveMetasMensais } from "../../services/goalsService";
 import type { MetaMensalForm } from "../../models/types";
+import { nomeLojaExibicao } from "../../models/nomeLoja";
 import ConfirmacaoModal from "../../components/ConfirmacaoModal/ConfirmacaoModal";
+import { CampoInteiro, CampoMoeda } from "./CampoValor";
 import NavegacaoMes, { ANO_METAS } from "./NavegacaoMes";
 
 function assinatura(lista: MetaMensalForm[]) {
@@ -127,17 +129,12 @@ export default function MetasMensaisCard() {
                     <tbody>
                         {metas.map((meta, index) => (
                             <tr key={meta.loja}>
-                                <td>{meta.nome}</td>
+                                <td className="metas-loja-nome">{nomeLojaExibicao(meta.nome)}</td>
                                 <td>
-                                    <input
-                                        type="number"
-                                        value={meta.meta_mensal}
-                                        onChange={(e) =>
-                                            atualizarMeta(
-                                                index,
-                                                "meta_mensal",
-                                                Number(e.target.value)
-                                            )
+                                    <CampoMoeda
+                                        valor={meta.meta_mensal}
+                                        onChange={(valor) =>
+                                            atualizarMeta(index, "meta_mensal", valor)
                                         }
                                     />
                                 </td>
@@ -168,15 +165,10 @@ export default function MetasMensaisCard() {
                                     />
                                 </td>
                                 <td>
-                                    <input
-                                        type="number"
-                                        value={meta.feriados}
-                                        onChange={(e) =>
-                                            atualizarMeta(
-                                                index,
-                                                "feriados",
-                                                Number(e.target.value)
-                                            )
+                                    <CampoInteiro
+                                        valor={meta.feriados}
+                                        onChange={(valor) =>
+                                            atualizarMeta(index, "feriados", valor)
                                         }
                                     />
                                 </td>

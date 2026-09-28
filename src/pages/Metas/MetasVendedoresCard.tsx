@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
+import { ChevronFirst, ChevronLast, ChevronLeft, ChevronRight } from "lucide-react";
 import { fetchLojas } from "../../services/usersService";
 import { fetchMetasVendedores, saveMetasVendedores } from "../../services/goalsService";
 import {
@@ -8,6 +9,7 @@ import {
 import { nomeLojaExibicao, ordenarLojas } from "../../models/nomeLoja";
 import type { Loja, MetaVendedorForm } from "../../models/types";
 import ConfirmacaoModal from "../../components/ConfirmacaoModal/ConfirmacaoModal";
+import { CampoMoeda } from "./CampoValor";
 import NavegacaoMes, { ANO_METAS } from "./NavegacaoMes";
 import SeletorPainel from "./SeletorPainel";
 
@@ -28,11 +30,14 @@ export default function MetasVendedoresCard() {
     const [base, setBase] = useState("");
     const [pagina, setPagina] = useState(1);
     const [total, setTotal] = useState(0);
-    const [totalPaginas, setTotalPaginas] = useState(0);
     const [listaCarregada, setListaCarregada] = useState(false);
     const [salvando, setSalvando] = useState(false);
     const [pendencia, setPendencia] = useState<Pendencia | null>(null);
     const alterado = assinatura(vendedores) !== base;
+    const totalPaginas = Math.max(1, Math.ceil(total / LIMITE_VENDEDORES));
+    const paginaAtual = Math.min(Math.max(pagina, 1), totalPaginas);
+    const naPrimeira = paginaAtual <= 1;
+    const naUltima = paginaAtual >= totalPaginas;
 
     const carregarLojas = useCallback(async () => {
         const data = await fetchLojas();
@@ -66,7 +71,6 @@ export default function MetasVendedoresCard() {
         setVendedores(lista);
         setBase(assinatura(lista));
         setTotal(paginaVendedores.total);
-        setTotalPaginas(paginaVendedores.totalPaginas);
         setListaCarregada(true);
     }, [mes, loja, pagina]);
 
@@ -146,29 +150,47 @@ export default function MetasVendedoresCard() {
         <article className="metas-card">
             <div className="metas-cabeca">
             <div className="metas-card-topo">
-                <h3>👤 Metas Vendedores</h3>
+                <div className="metas-card-titulo">
+                    <h3>👤 Metas Vendedores</h3>
+                    <p className="metas-total">Total: {total}</p>
+                </div>
 
                 <div className="metas-paginacao">
-                    <p>
-                        {total} vendedores · Página {Math.max(pagina, 1)} de{" "}
-                        {Math.max(totalPaginas, 1)}
-                    </p>
-                    <div className="metas-paginacao-botoes">
-                        <button
-                            type="button"
-                            onClick={() => solicitar({ tipo: "pagina", pagina: pagina - 1 })}
-                            disabled={pagina <= 1}
-                        >
-                            Anterior
-                        </button>
-                        <button
-                            type="button"
-                            onClick={() => solicitar({ tipo: "pagina", pagina: pagina + 1 })}
-                            disabled={pagina >= totalPaginas}
-                        >
-                            Próxima
-                        </button>
-                    </div>
+                    <button
+                        type="button"
+                        aria-label="Primeira página"
+                        disabled={naPrimeira}
+                        onClick={() => solicitar({ tipo: "pagina", pagina: 1 })}
+                    >
+                        <ChevronFirst size={18} strokeWidth={2.5} aria-hidden="true" />
+                    </button>
+                    <button
+                        type="button"
+                        aria-label="Página anterior"
+                        disabled={naPrimeira}
+                        onClick={() => solicitar({ tipo: "pagina", pagina: paginaAtual - 1 })}
+                    >
+                        <ChevronLeft size={18} strokeWidth={2.5} aria-hidden="true" />
+                    </button>
+                    <span className="metas-pagina-indicador">
+                        {paginaAtual} de {totalPaginas}
+                    </span>
+                    <button
+                        type="button"
+                        aria-label="Próxima página"
+                        disabled={naUltima}
+                        onClick={() => solicitar({ tipo: "pagina", pagina: paginaAtual + 1 })}
+                    >
+                        <ChevronRight size={18} strokeWidth={2.5} aria-hidden="true" />
+                    </button>
+                    <button
+                        type="button"
+                        aria-label="Última página"
+                        disabled={naUltima}
+                        onClick={() => solicitar({ tipo: "pagina", pagina: totalPaginas })}
+                    >
+                        <ChevronLast size={18} strokeWidth={2.5} aria-hidden="true" />
+                    </button>
                 </div>
             </div>
 
@@ -217,12 +239,9 @@ export default function MetasVendedoresCard() {
                                 <tr key={vendedor.codigo_vendedor}>
                                     <td>{vendedor.nome_vendedor}</td>
                                     <td>
-                                        <input
-                                            type="number"
-                                            value={vendedor.meta}
-                                            onChange={(e) =>
-                                                atualizarMeta(index, Number(e.target.value))
-                                            }
+                                        <CampoMoeda
+                                            valor={vendedor.meta}
+                                            onChange={(valor) => atualizarMeta(index, valor)}
                                         />
                                     </td>
                                 </tr>
