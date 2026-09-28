@@ -127,7 +127,7 @@ export default function MetasMensaisCard() {
                         <tr>
                             <th>Loja</th>
                             <th>Meta Mensal</th>
-                            <th className="metas-fim-semana-titulo">Fim de Semana</th>
+                            <th className="metas-fim-semana-titulo">Fins de Semana</th>
                             <th>Feriados</th>
                         </tr>
                     </thead>

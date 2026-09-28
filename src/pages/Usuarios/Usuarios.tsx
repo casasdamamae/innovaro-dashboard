@@ -10,6 +10,7 @@ import {
     updateUsuario
 } from "../../services/usersService";
 import { nomeLojaExibicao, ordenarLojas } from "../../models/nomeLoja";
+import SeletorPainel from "../Metas/SeletorPainel";
 import { getStoredUser } from "../../models/session";
 import type {
     AtualizarUsuario,
@@ -342,18 +343,23 @@ export default function Usuarios() {
                             <label className="usuarios-campo-titulo" htmlFor="visibilidade">
                                 Visibilidade
                             </label>
-                            <select
+                            <SeletorPainel
                                 id="visibilidade"
-                                value={loja}
-                                disabled={nivel === "ADMIN" || editandoASiMesmo}
-                                onChange={(e) => setLoja(e.target.value)}
-                            >
-                                {lojas.map((l) => (
-                                    <option key={l.id} value={l.id}>
-                                        {nomeLojaExibicao(l.nome)}
-                                    </option>
-                                ))}
-                            </select>
+                                rotulo={nomeLojaExibicao(
+                                    lojas.find((item) => item.id === loja)?.nome ?? ""
+                                )}
+                                ariaLabel="Visibilidade"
+                                layout="lista"
+                                compacto
+                                larguraCheia
+                                desabilitado={nivel === "ADMIN" || editandoASiMesmo}
+                                selecionado={loja}
+                                onChange={setLoja}
+                                opcoes={lojas.map((item) => ({
+                                    id: item.id,
+                                    rotulo: nomeLojaExibicao(item.nome)
+                                }))}
+                            />
                         </div>
 
                         {editandoId !== null && (

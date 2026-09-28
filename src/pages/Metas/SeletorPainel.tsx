@@ -1,4 +1,5 @@
 import { useEffect, useId, useRef, useState } from "react";
+import "./SeletorPainel.css";
 
 export type OpcaoSeletor = {
     id: string;
@@ -14,6 +15,9 @@ type SeletorPainelProps = {
     onChange: (id: string) => void;
     compacto?: boolean;
     ancora?: "centro" | "direita";
+    larguraCheia?: boolean;
+    desabilitado?: boolean;
+    id?: string;
 };
 
 export default function SeletorPainel({
@@ -24,7 +28,10 @@ export default function SeletorPainel({
     selecionado,
     onChange,
     compacto = false,
-    ancora = "centro"
+    ancora = "centro",
+    larguraCheia = false,
+    desabilitado = false,
+    id
 }: SeletorPainelProps) {
     const [aberto, setAberto] = useState(false);
     const raiz = useRef<HTMLDivElement>(null);
@@ -52,6 +59,10 @@ export default function SeletorPainel({
         };
     }, [aberto]);
 
+    useEffect(() => {
+        if (desabilitado) setAberto(false);
+    }, [desabilitado]);
+
     function escolher(id: string) {
         setAberto(false);
         if (id !== selecionado) onChange(id);
@@ -65,19 +76,29 @@ export default function SeletorPainel({
         .filter(Boolean)
         .join(" ");
 
-    const classeRaiz = ancora === "direita" ? "metas-mes metas-mes-direita" : "metas-mes";
+    const classeRaiz = [
+        "metas-mes",
+        ancora === "direita" ? "metas-mes-direita" : "",
+        larguraCheia ? "metas-mes-bloco" : ""
+    ]
+        .filter(Boolean)
+        .join(" ");
     const classeBotao = compacto ? "metas-mes-botao metas-mes-botao-compacto" : "metas-mes-botao";
 
     return (
         <div className={classeRaiz} ref={raiz}>
             <button
+                id={id}
                 type="button"
                 className={classeBotao}
                 title={compacto ? rotulo : undefined}
                 aria-expanded={aberto}
                 aria-haspopup="dialog"
                 aria-controls={painelId}
-                onClick={() => setAberto((atual) => !atual)}
+                disabled={desabilitado}
+                onClick={() => {
+                    if (!desabilitado) setAberto((atual) => !atual);
+                }}
             >
                 {compacto ? (
                     <>
@@ -91,7 +112,7 @@ export default function SeletorPainel({
                 )}
             </button>
 
-            {aberto && (
+            {aberto && !desabilitado && (
                 <div className={classePainel} id={painelId} role="dialog" aria-label={ariaLabel}>
                     {opcoes.map((opcao) => {
                         const ativo = opcao.id === selecionado;
