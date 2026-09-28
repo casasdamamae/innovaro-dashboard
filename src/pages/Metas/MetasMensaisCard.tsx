@@ -107,10 +107,12 @@ export default function MetasMensaisCard() {
 
     return (
         <article className="metas-card">
-            <h3>🎯 Metas Mensais</h3>
+            <div className="metas-cabeca">
+                <h3>🎯 Metas Mensais</h3>
+                <NavegacaoMes mes={mes} onChange={pedirMes} />
+            </div>
 
-            <NavegacaoMes mes={mes} onChange={pedirMes} />
-
+            <div className="metas-resto">
             <div className="metas-tabela">
                 <table>
                     <thead>
@@ -188,6 +190,7 @@ export default function MetasMensaisCard() {
                 <button type="button" onClick={() => void salvar()} disabled={salvando}>
                     💾 Salvar Alterações
                 </button>
+            </div>
             </div>
 
             <ConfirmacaoModal

@@ -8,6 +8,7 @@ import {
     LIMITE_USUARIOS,
     updateUsuario
 } from "../../services/usersService";
+import { nomeLojaExibicao, ordenarLojas } from "../../models/nomeLoja";
 import { getStoredUser } from "../../models/session";
 import type {
     AtualizarUsuario,
@@ -165,7 +166,7 @@ export default function Usuarios() {
     useEffect(() => {
         const timer = setTimeout(() => {
             void fetchLojas()
-                .then(setLojas)
+                .then((data) => setLojas(ordenarLojas(data)))
                 .catch((erro) => {
                     console.error(erro);
                     alert("Erro ao carregar lojas.");
@@ -326,7 +327,7 @@ export default function Usuarios() {
                             >
                                 {lojas.map((l) => (
                                     <option key={l.id} value={l.id}>
-                                        {l.nome}
+                                        {nomeLojaExibicao(l.nome)}
                                     </option>
                                 ))}
                             </select>

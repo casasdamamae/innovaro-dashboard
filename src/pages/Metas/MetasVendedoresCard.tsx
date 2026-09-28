@@ -5,9 +5,11 @@ import {
     fetchVendedoresPorLoja,
     LIMITE_VENDEDORES
 } from "../../services/vendedoresService";
+import { nomeLojaExibicao, ordenarLojas } from "../../models/nomeLoja";
 import type { Loja, MetaVendedorForm } from "../../models/types";
 import ConfirmacaoModal from "../../components/ConfirmacaoModal/ConfirmacaoModal";
 import NavegacaoMes, { ANO_METAS } from "./NavegacaoMes";
+import SeletorPainel from "./SeletorPainel";
 
 type Pendencia =
     | { tipo: "mes"; mes: number }
@@ -34,10 +36,7 @@ export default function MetasVendedoresCard() {
 
     const carregarLojas = useCallback(async () => {
         const data = await fetchLojas();
-        const todas = data.filter((item) => item.id === "TODAS");
-        const demais = data.filter((item) => item.id !== "TODAS");
-
-        setLojas([...demais, ...todas]);
+        setLojas(ordenarLojas(data));
         setLoja((atual) => atual || data[0]?.id || "");
     }, []);
 
@@ -145,6 +144,7 @@ export default function MetasVendedoresCard() {
 
     return (
         <article className="metas-card">
+            <div className="metas-cabeca">
             <div className="metas-card-topo">
                 <h3>👤 Metas Vendedores</h3>
 
@@ -172,22 +172,33 @@ export default function MetasVendedoresCard() {
                 </div>
             </div>
 
-            <NavegacaoMes mes={mes} onChange={(novoMes) => solicitar({ tipo: "mes", mes: novoMes })} />
+            <div className="metas-linha-mes">
+                <div className="metas-linha-mes-lado" />
+                <NavegacaoMes
+                    mes={mes}
+                    onChange={(novoMes) => solicitar({ tipo: "mes", mes: novoMes })}
+                />
+                <div className="metas-linha-mes-lado">
+                    <SeletorPainel
+                        rotulo={nomeLojaExibicao(
+                            lojas.find((item) => item.id === loja)?.nome ?? ""
+                        )}
+                        ariaLabel="Selecionar loja"
+                        layout="lista"
+                        compacto
+                        ancora="direita"
+                        selecionado={loja}
+                        onChange={(id) => solicitar({ tipo: "loja", loja: id })}
+                        opcoes={lojas.map((item) => ({
+                            id: item.id,
+                            rotulo: nomeLojaExibicao(item.nome)
+                        }))}
+                    />
+                </div>
+            </div>
+            </div>
 
-            <label className="metas-loja">
-                Loja
-                <select
-                    value={loja}
-                    onChange={(e) => solicitar({ tipo: "loja", loja: e.target.value })}
-                >
-                    {lojas.map((item) => (
-                        <option key={item.id} value={item.id}>
-                            {item.nome}
-                        </option>
-                    ))}
-                </select>
-            </label>
-
+            <div className="metas-resto">
             <div className="metas-tabela">
                 <table>
                     <thead>
@@ -225,6 +236,7 @@ export default function MetasVendedoresCard() {
                 <button type="button" onClick={() => void salvar()} disabled={salvando}>
                     💾 Salvar Alterações
                 </button>
+            </div>
             </div>
 
             <ConfirmacaoModal

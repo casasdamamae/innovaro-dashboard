@@ -1,3 +1,11 @@
+.metas-pagina {
+    --color-primary: #1565c0;
+    --color-primary-light: #e3f2fd;
+    --color-primary-light-hover: #bbdefb;
+    --metas-seletor-fonte: 16px;
+    --metas-loja-largura: 272px;
+}
+
 .metas-pagina h2 {
     margin: 0 0 20px;
     color: #1565c0;
@@ -6,8 +14,21 @@
 .metas-colunas {
     display: grid;
     grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-    gap: 20px;
+    column-gap: 20px;
+    row-gap: 0;
     align-items: start;
+}
+
+.metas-card {
+    display: grid;
+    grid-template-rows: subgrid;
+    grid-row: span 2;
+    align-items: start;
+}
+
+.metas-card > .confirmacao-overlay {
+    grid-row: 1;
+    grid-column: 1;
 }
 
 .metas-card {
@@ -37,11 +58,35 @@
     margin: 0;
 }
 
+.metas-linha-mes {
+    position: relative;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.metas-linha-mes-lado {
+    display: flex;
+    justify-content: flex-end;
+    min-width: 0;
+}
+
+.metas-linha-mes .metas-mes {
+    margin-bottom: 0;
+}
+
 .metas-mes {
     position: relative;
     display: flex;
     justify-content: center;
     margin-bottom: 20px;
+}
+
+.metas-mes-direita {
+    position: static;
+    justify-content: flex-end;
+    width: 100%;
 }
 
 .metas-mes-botao,
@@ -60,7 +105,7 @@
     align-items: center;
     gap: 8px;
     padding: 0 16px;
-    font-size: 16px;
+    font-size: var(--metas-seletor-fonte);
 }
 
 .metas-mes-botao:hover,
@@ -109,16 +154,81 @@
     color: #fff;
 }
 
-.metas-loja {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    margin-bottom: 20px;
-    font-weight: bold;
-    color: #1565c0;
+.metas-mes-painel-lista {
+    grid-template-columns: minmax(0, 1fr);
+    max-height: 280px;
+    overflow-y: auto;
 }
 
-.metas-loja select,
+.metas-mes-painel-lista .metas-mes-opcao {
+    height: auto;
+    min-height: 36px;
+    padding: 8px 12px;
+    font-size: var(--metas-seletor-fonte);
+    white-space: normal;
+}
+
+.metas-mes-painel-lista .metas-mes-opcao:hover,
+.metas-mes-painel-lista .metas-mes-opcao-ativa:hover {
+    background: var(--color-primary-light-hover);
+    color: var(--color-primary);
+}
+
+.metas-mes-painel-lista .metas-mes-opcao-ativa {
+    background: var(--color-primary-light);
+    color: var(--color-primary);
+}
+
+.metas-mes-botao {
+    max-width: 100%;
+    height: auto;
+    min-height: 42px;
+    white-space: normal;
+    text-align: center;
+    line-height: 1.2;
+}
+
+.metas-mes-botao.metas-mes-botao-compacto {
+    width: var(--metas-loja-largura);
+    max-width: 100%;
+    min-width: 0;
+    flex-shrink: 1;
+    height: 42px;
+    min-height: 42px;
+    padding: 0 8px;
+    border-radius: 6px;
+    background: var(--color-primary-light);
+    color: var(--color-primary);
+    font-size: var(--metas-seletor-fonte);
+    line-height: 1.2;
+    white-space: nowrap;
+}
+
+.metas-mes-botao.metas-mes-botao-compacto:hover {
+    background: var(--color-primary-light-hover);
+}
+
+.metas-mes-botao-rotulo {
+    min-width: 0;
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    text-align: left;
+}
+
+.metas-mes-botao-caret {
+    flex-shrink: 0;
+}
+
+.metas-mes-painel-direita {
+    left: auto;
+    right: 0;
+    transform: none;
+    width: max-content;
+    max-width: 100%;
+}
+
 .metas-card input[type="number"] {
     width: 100%;
     height: 42px;
@@ -130,7 +240,6 @@
     color: #333;
 }
 
-.metas-loja select:focus,
 .metas-card input[type="number"]:focus {
     outline: none;
     border-color: #1565c0;
@@ -194,5 +303,10 @@
 @media (max-width: 992px) {
     .metas-colunas {
         grid-template-columns: 1fr;
+        row-gap: 20px;
+    }
+
+    .metas-card {
+        display: block;
     }
 }
