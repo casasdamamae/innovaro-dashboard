@@ -2,20 +2,31 @@ import { useCallback, useEffect, useState } from "react";
 import { fetchLojas } from "../../services/usersService";
 import { fetchMetasMensais, saveMetasMensais } from "../../services/goalsService";
 import type { MetaMensalForm } from "../../models/types";
-import NavegacaoMes from "./NavegacaoMes";
+import ConfirmacaoModal from "../../components/ConfirmacaoModal/ConfirmacaoModal";
+import NavegacaoMes, { ANO_METAS } from "./NavegacaoMes";
+
+function assinatura(lista: MetaMensalForm[]) {
+    return lista
+        .map(
+            (item) =>
+                `${item.loja}:${item.meta_mensal}:${item.abre_sabado}:${item.abre_domingo}:${item.feriados}`
+        )
+        .join("|");
+}
 
 export default function MetasMensaisCard() {
-    const hoje = new Date();
     const [metas, setMetas] = useState<MetaMensalForm[]>([]);
-    const [ano, setAno] = useState(hoje.getFullYear());
-    const [mes, setMes] = useState(hoje.getMonth() + 1);
+    const [base, setBase] = useState("");
+    const [mes, setMes] = useState(new Date().getMonth() + 1);
+    const [mesPendente, setMesPendente] = useState<number | null>(null);
     const [salvando, setSalvando] = useState(false);
+    const alterado = assinatura(metas) !== base;
 
     const carregar = useCallback(async () => {
         try {
             const [lojasData, metasData] = await Promise.all([
                 fetchLojas(),
-                fetchMetasMensais({ ano, mes })
+                fetchMetasMensais({ ano: ANO_METAS, mes })
             ]);
 
             const lista = lojasData
@@ -26,7 +37,7 @@ export default function MetasMensaisCard() {
                     return {
                         loja: loja.id,
                         nome: loja.nome,
-                        ano,
+                        ano: ANO_METAS,
                         mes,
                         meta_mensal: meta?.meta_mensal || 0,
                         abre_sabado: meta?.abre_sabado ?? 1,
@@ -36,17 +47,19 @@ export default function MetasMensaisCard() {
                 });
 
             setMetas(lista);
+            setBase(assinatura(lista));
         } catch (erro) {
             console.error(erro);
             alert("Erro ao carregar metas.");
         }
-    }, [ano, mes]);
+    }, [mes]);
 
     async function salvar() {
         setSalvando(true);
 
         try {
             await saveMetasMensais(metas);
+            setBase(assinatura(metas));
             alert("Metas salvas com sucesso.");
         } catch (erro) {
             console.error(erro);
@@ -76,18 +89,27 @@ export default function MetasMensaisCard() {
         );
     }
 
+    function pedirMes(novoMes: number) {
+        if (alterado) {
+            setMesPendente(novoMes);
+            return;
+        }
+
+        setMes(novoMes);
+    }
+
+    function confirmarMes() {
+        if (mesPendente === null) return;
+
+        setMes(mesPendente);
+        setMesPendente(null);
+    }
+
     return (
         <article className="metas-card">
             <h3>🎯 Metas Mensais</h3>
 
-            <NavegacaoMes
-                ano={ano}
-                mes={mes}
-                onChange={(novoAno, novoMes) => {
-                    setAno(novoAno);
-                    setMes(novoMes);
-                }}
-            />
+            <NavegacaoMes mes={mes} onChange={pedirMes} />
 
             <div className="metas-tabela">
                 <table>
@@ -167,6 +189,15 @@ export default function MetasMensaisCard() {
                     💾 Salvar Alterações
                 </button>
             </div>
+
+            <ConfirmacaoModal
+                aberto={mesPendente !== null}
+                titulo="Alterações não salvas"
+                mensagem="Há alterações não salvas. Se continuar, elas serão descartadas."
+                textoConfirmar="Continuar"
+                onConfirmar={confirmarMes}
+                onCancelar={() => setMesPendente(null)}
+            />
         </article>
     );
 }

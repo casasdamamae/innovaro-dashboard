@@ -6,20 +6,31 @@ import {
     LIMITE_VENDEDORES
 } from "../../services/vendedoresService";
 import type { Loja, MetaVendedorForm } from "../../models/types";
-import NavegacaoMes from "./NavegacaoMes";
+import ConfirmacaoModal from "../../components/ConfirmacaoModal/ConfirmacaoModal";
+import NavegacaoMes, { ANO_METAS } from "./NavegacaoMes";
+
+type Pendencia =
+    | { tipo: "mes"; mes: number }
+    | { tipo: "pagina"; pagina: number }
+    | { tipo: "loja"; loja: string };
+
+function assinatura(lista: MetaVendedorForm[]) {
+    return lista.map((item) => `${item.codigo_vendedor}:${item.meta}`).join("|");
+}
 
 export default function MetasVendedoresCard() {
-    const hoje = new Date();
-    const [ano, setAno] = useState(hoje.getFullYear());
-    const [mes, setMes] = useState(hoje.getMonth() + 1);
+    const [mes, setMes] = useState(new Date().getMonth() + 1);
     const [lojas, setLojas] = useState<Loja[]>([]);
     const [loja, setLoja] = useState("");
     const [vendedores, setVendedores] = useState<MetaVendedorForm[]>([]);
+    const [base, setBase] = useState("");
     const [pagina, setPagina] = useState(1);
     const [total, setTotal] = useState(0);
     const [totalPaginas, setTotalPaginas] = useState(0);
     const [listaCarregada, setListaCarregada] = useState(false);
     const [salvando, setSalvando] = useState(false);
+    const [pendencia, setPendencia] = useState<Pendencia | null>(null);
+    const alterado = assinatura(vendedores) !== base;
 
     const carregarLojas = useCallback(async () => {
         const data = await fetchLojas();
@@ -35,7 +46,7 @@ export default function MetasVendedoresCard() {
 
         const [paginaVendedores, metasData] = await Promise.all([
             fetchVendedoresPorLoja(loja, pagina, LIMITE_VENDEDORES),
-            fetchMetasVendedores({ ano, mes, loja })
+            fetchMetasVendedores({ ano: ANO_METAS, mes, loja })
         ]);
 
         const lista = paginaVendedores.dados.map((vendedor) => {
@@ -44,7 +55,7 @@ export default function MetasVendedoresCard() {
             );
 
             return {
-                ano,
+                ano: ANO_METAS,
                 mes,
                 codigo_loja: loja,
                 codigo_vendedor: vendedor.codigo_vendedor,
@@ -54,16 +65,18 @@ export default function MetasVendedoresCard() {
         });
 
         setVendedores(lista);
+        setBase(assinatura(lista));
         setTotal(paginaVendedores.total);
         setTotalPaginas(paginaVendedores.totalPaginas);
         setListaCarregada(true);
-    }, [ano, mes, loja, pagina]);
+    }, [mes, loja, pagina]);
 
     async function salvar() {
         setSalvando(true);
 
         try {
             await saveMetasVendedores(vendedores);
+            setBase(assinatura(vendedores));
             alert("Metas salvas com sucesso.");
         } catch (erro) {
             console.error(erro);
@@ -105,27 +118,67 @@ export default function MetasVendedoresCard() {
         );
     }
 
+    function aplicar(acao: Pendencia) {
+        if (acao.tipo === "mes") setMes(acao.mes);
+        if (acao.tipo === "pagina") setPagina(acao.pagina);
+        if (acao.tipo === "loja") {
+            setLoja(acao.loja);
+            setPagina(1);
+        }
+    }
+
+    function solicitar(acao: Pendencia) {
+        if (alterado) {
+            setPendencia(acao);
+            return;
+        }
+
+        aplicar(acao);
+    }
+
+    function confirmarPendencia() {
+        if (!pendencia) return;
+
+        aplicar(pendencia);
+        setPendencia(null);
+    }
+
     return (
         <article className="metas-card">
-            <h3>👤 Metas Vendedores</h3>
+            <div className="metas-card-topo">
+                <h3>👤 Metas Vendedores</h3>
 
-            <NavegacaoMes
-                ano={ano}
-                mes={mes}
-                onChange={(novoAno, novoMes) => {
-                    setAno(novoAno);
-                    setMes(novoMes);
-                }}
-            />
+                <div className="metas-paginacao">
+                    <p>
+                        {total} vendedores · Página {Math.max(pagina, 1)} de{" "}
+                        {Math.max(totalPaginas, 1)}
+                    </p>
+                    <div className="metas-paginacao-botoes">
+                        <button
+                            type="button"
+                            onClick={() => solicitar({ tipo: "pagina", pagina: pagina - 1 })}
+                            disabled={pagina <= 1}
+                        >
+                            Anterior
+                        </button>
+                        <button
+                            type="button"
+                            onClick={() => solicitar({ tipo: "pagina", pagina: pagina + 1 })}
+                            disabled={pagina >= totalPaginas}
+                        >
+                            Próxima
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <NavegacaoMes mes={mes} onChange={(novoMes) => solicitar({ tipo: "mes", mes: novoMes })} />
 
             <label className="metas-loja">
                 Loja
                 <select
                     value={loja}
-                    onChange={(e) => {
-                        setLoja(e.target.value);
-                        setPagina(1);
-                    }}
+                    onChange={(e) => solicitar({ tipo: "loja", loja: e.target.value })}
                 >
                     {lojas.map((item) => (
                         <option key={item.id} value={item.id}>
@@ -168,34 +221,20 @@ export default function MetasVendedoresCard() {
                 </table>
             </div>
 
-            <div className="metas-paginacao">
-                <p>
-                    {total} vendedores · Página {Math.max(pagina, 1)} de{" "}
-                    {Math.max(totalPaginas, 1)}
-                </p>
-                <div className="metas-paginacao-botoes">
-                    <button
-                        type="button"
-                        onClick={() => setPagina((atual) => atual - 1)}
-                        disabled={pagina <= 1}
-                    >
-                        Anterior
-                    </button>
-                    <button
-                        type="button"
-                        onClick={() => setPagina((atual) => atual + 1)}
-                        disabled={pagina >= totalPaginas}
-                    >
-                        Próxima
-                    </button>
-                </div>
-            </div>
-
             <div className="metas-salvar">
                 <button type="button" onClick={() => void salvar()} disabled={salvando}>
                     💾 Salvar Alterações
                 </button>
             </div>
+
+            <ConfirmacaoModal
+                aberto={pendencia !== null}
+                titulo="Alterações não salvas"
+                mensagem="Há alterações não salvas. Se continuar, elas serão descartadas."
+                textoConfirmar="Continuar"
+                onConfirmar={confirmarPendencia}
+                onCancelar={() => setPendencia(null)}
+            />
         </article>
     );
 }
