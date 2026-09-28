@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 import { fetchLojas } from "../../services/usersService";
 import { fetchMetasMensais, saveMetasMensais } from "../../services/goalsService";
 import type { MetaMensalForm } from "../../models/types";
+import { formatBRL } from "../../models/formatters";
 import { nomeLojaExibicao } from "../../models/nomeLoja";
 import ConfirmacaoModal from "../../components/ConfirmacaoModal/ConfirmacaoModal";
 import { CampoInteiro, CampoMoeda } from "./CampoValor";
@@ -107,6 +108,11 @@ export default function MetasMensaisCard() {
         setMesPendente(null);
     }
 
+    const totalMeta = metas.reduce((soma, item) => soma + item.meta_mensal, 0);
+    const totalSabado = metas.filter((item) => item.abre_sabado === 1).length;
+    const totalDomingo = metas.filter((item) => item.abre_domingo === 1).length;
+    const totalFeriados = metas.reduce((soma, item) => soma + item.feriados, 0);
+
     return (
         <article className="metas-card">
             <div className="metas-cabeca">
@@ -137,7 +143,8 @@ export default function MetasMensaisCard() {
                                         }
                                     />
                                 </td>
-                                <td className="metas-fim-semana">
+                                <td>
+                                    <div className="metas-fim-semana">
                                     <button
                                         type="button"
                                         className={
@@ -174,6 +181,7 @@ export default function MetasMensaisCard() {
                                     >
                                         Domingo
                                     </button>
+                                    </div>
                                 </td>
                                 <td>
                                     <CampoInteiro
@@ -186,6 +194,25 @@ export default function MetasMensaisCard() {
                             </tr>
                         ))}
                     </tbody>
+                    {metas.length > 0 && (
+                        <tfoot>
+                            <tr className="metas-totais">
+                                <td>Total</td>
+                                <td>
+                                    <span className="metas-total-valor">{formatBRL(totalMeta)}</span>
+                                </td>
+                                <td>
+                                    <div className="metas-fim-semana">
+                                        <span className="metas-fim-semana-contagem">{totalSabado}</span>
+                                        <span className="metas-fim-semana-contagem">{totalDomingo}</span>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span className="metas-total-valor">{totalFeriados}</span>
+                                </td>
+                            </tr>
+                        </tfoot>
+                    )}
                 </table>
             </div>
 

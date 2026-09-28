@@ -5,6 +5,7 @@
     --color-primary-light-active: #90caf9;
     --metas-seletor-fonte: 16px;
     --metas-loja-largura: 272px;
+    --metas-painel-mes-largura: 320px;
 }
 
 .metas-pagina h2 {
@@ -138,12 +139,16 @@
     position: absolute;
     top: calc(100% + 8px);
     left: 50%;
-    z-index: 5;
+    z-index: 50;
     transform: translateX(-50%);
     display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: repeat(3, minmax(88px, 1fr));
     gap: 8px;
-    width: min(100%, 360px);
+    box-sizing: border-box;
+    width: var(--metas-painel-mes-largura);
+    min-width: var(--metas-painel-mes-largura);
+    max-width: none;
+    flex: none;
     padding: 12px;
     background: #fff;
     border-radius: 8px;
@@ -151,13 +156,17 @@
 }
 
 .metas-mes-opcao {
-    height: 36px;
+    height: auto;
+    min-height: 36px;
+    padding: 8px 4px;
     border: none;
     border-radius: 6px;
     background: #f5f7fb;
     color: #1565c0;
     cursor: pointer;
     font-weight: 600;
+    line-height: 1.2;
+    white-space: nowrap;
 }
 
 .metas-mes-opcao:hover {
@@ -172,6 +181,9 @@
 
 .metas-mes-painel-lista {
     grid-template-columns: minmax(0, 1fr);
+    width: max-content;
+    min-width: max-content;
+    max-width: none;
     max-height: 280px;
     overflow-y: auto;
 }
@@ -242,7 +254,8 @@
     right: 0;
     transform: none;
     width: max-content;
-    max-width: 100%;
+    min-width: max-content;
+    max-width: none;
 }
 
 .metas-loja-nome {
@@ -257,6 +270,24 @@
     display: flex;
     align-items: center;
     gap: 6px;
+}
+
+.metas-totais td {
+    font-weight: 700;
+    border-top: 2px solid #1565c0;
+}
+
+.metas-total-valor {
+    display: flex;
+    align-items: center;
+    height: 42px;
+    padding: 0 12px;
+}
+
+.metas-fim-semana-contagem {
+    flex: 1 1 0;
+    min-width: 4.75rem;
+    text-align: center;
 }
 
 .metas-fim-semana .metas-dia {
