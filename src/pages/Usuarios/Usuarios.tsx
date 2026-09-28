@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import axios from "axios";
+import { ChevronFirst, ChevronLast, ChevronLeft, ChevronRight } from "lucide-react";
 import {
     createUsuario,
     deleteUsuario,
@@ -8,6 +9,8 @@ import {
     LIMITE_USUARIOS,
     updateUsuario
 } from "../../services/usersService";
+import { nomeLojaExibicao, ordenarLojas } from "../../models/nomeLoja";
+import SeletorPainel from "../Metas/SeletorPainel";
 import { getStoredUser } from "../../models/session";
 import type {
     AtualizarUsuario,
@@ -40,7 +43,6 @@ export default function Usuarios() {
     const [usuarios, setUsuarios] = useState<UsuarioAdmin[]>([]);
     const [pagina, setPagina] = useState(1);
     const [total, setTotal] = useState(0);
-    const [totalPaginas, setTotalPaginas] = useState(1);
 
     const [usuario, setUsuario] = useState("");
     const [senha, setSenha] = useState("");
@@ -67,7 +69,6 @@ export default function Usuarios() {
     const aplicarPagina = useCallback((resposta: PaginaUsuarios) => {
         setUsuarios(resposta.dados);
         setTotal(resposta.total);
-        setTotalPaginas(resposta.totalPaginas);
     }, []);
 
     const carregarUsuarios = useCallback(
@@ -165,7 +166,7 @@ export default function Usuarios() {
     useEffect(() => {
         const timer = setTimeout(() => {
             void fetchLojas()
-                .then(setLojas)
+                .then((data) => setLojas(ordenarLojas(data)))
                 .catch((erro) => {
                     console.error(erro);
                     alert("Erro ao carregar lojas.");
@@ -186,7 +187,10 @@ export default function Usuarios() {
         return () => clearTimeout(timer);
     }, [pagina, carregarUsuarios]);
 
-    const ultimaPagina = Math.max(totalPaginas, 1);
+    const totalPaginas = Math.max(1, Math.ceil(total / LIMITE_USUARIOS));
+    const paginaAtual = Math.min(Math.max(pagina, 1), totalPaginas);
+    const naPrimeira = paginaAtual <= 1;
+    const naUltima = paginaAtual >= totalPaginas;
 
     return (
         <section className="usuarios-pagina">
@@ -194,6 +198,48 @@ export default function Usuarios() {
 
             <div className="usuarios-colunas">
                 <div className="usuarios-card usuarios-listagem">
+                    <div className="usuarios-paginacao">
+                        <p className="usuarios-total">Total: {total}</p>
+                        <div className="usuarios-paginacao-controles">
+                            <button
+                                type="button"
+                                aria-label="Primeira página"
+                                disabled={naPrimeira}
+                                onClick={() => setPagina(1)}
+                            >
+                                <ChevronFirst size={18} strokeWidth={2.5} aria-hidden="true" />
+                            </button>
+                            <button
+                                type="button"
+                                aria-label="Página anterior"
+                                disabled={naPrimeira}
+                                onClick={() => setPagina(paginaAtual - 1)}
+                            >
+                                <ChevronLeft size={18} strokeWidth={2.5} aria-hidden="true" />
+                            </button>
+                            <span className="usuarios-pagina-indicador">
+                                {paginaAtual} de {totalPaginas}
+                            </span>
+                            <button
+                                type="button"
+                                aria-label="Próxima página"
+                                disabled={naUltima}
+                                onClick={() => setPagina(paginaAtual + 1)}
+                            >
+                                <ChevronRight size={18} strokeWidth={2.5} aria-hidden="true" />
+                            </button>
+                            <button
+                                type="button"
+                                aria-label="Última página"
+                                disabled={naUltima}
+                                onClick={() => setPagina(totalPaginas)}
+                            >
+                                <ChevronLast size={18} strokeWidth={2.5} aria-hidden="true" />
+                            </button>
+                        </div>
+                    </div>
+
+                    <div className="usuarios-tabela">
                     <table>
                         <thead>
                             <tr>
@@ -232,27 +278,6 @@ export default function Usuarios() {
                             ))}
                         </tbody>
                     </table>
-
-                    <div className="usuarios-paginacao">
-                        <p>
-                            {total} usuários · Página {pagina} de {ultimaPagina}
-                        </p>
-                        <div className="usuarios-paginacao-botoes">
-                            <button
-                                type="button"
-                                onClick={() => setPagina((atual) => atual - 1)}
-                                disabled={pagina <= 1}
-                            >
-                                Anterior
-                            </button>
-                            <button
-                                type="button"
-                                onClick={() => setPagina((atual) => atual + 1)}
-                                disabled={pagina >= totalPaginas}
-                            >
-                                Próxima
-                            </button>
-                        </div>
                     </div>
                 </div>
 
@@ -318,18 +343,23 @@ export default function Usuarios() {
                             <label className="usuarios-campo-titulo" htmlFor="visibilidade">
                                 Visibilidade
                             </label>
-                            <select
+                            <SeletorPainel
                                 id="visibilidade"
-                                value={loja}
-                                disabled={nivel === "ADMIN" || editandoASiMesmo}
-                                onChange={(e) => setLoja(e.target.value)}
-                            >
-                                {lojas.map((l) => (
-                                    <option key={l.id} value={l.id}>
-                                        {l.nome}
-                                    </option>
-                                ))}
-                            </select>
+                                rotulo={nomeLojaExibicao(
+                                    lojas.find((item) => item.id === loja)?.nome ?? ""
+                                )}
+                                ariaLabel="Visibilidade"
+                                layout="lista"
+                                compacto
+                                larguraCheia
+                                desabilitado={nivel === "ADMIN" || editandoASiMesmo}
+                                selecionado={loja}
+                                onChange={setLoja}
+                                opcoes={lojas.map((item) => ({
+                                    id: item.id,
+                                    rotulo: nomeLojaExibicao(item.nome)
+                                }))}
+                            />
                         </div>
 
                         {editandoId !== null && (

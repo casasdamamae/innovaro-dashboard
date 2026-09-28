@@ -1,40 +1,41 @@
+import SeletorPainel from "./SeletorPainel";
+
+export const ANO_METAS = 2026;
+
+const MESES = [
+    "Janeiro",
+    "Fevereiro",
+    "Março",
+    "Abril",
+    "Maio",
+    "Junho",
+    "Julho",
+    "Agosto",
+    "Setembro",
+    "Outubro",
+    "Novembro",
+    "Dezembro"
+];
+
 type NavegacaoMesProps = {
-    ano: number;
     mes: number;
-    onChange: (ano: number, mes: number) => void;
+    onChange: (mes: number) => void;
 };
 
-export default function NavegacaoMes({ ano, mes, onChange }: NavegacaoMesProps) {
-    function anterior() {
-        if (mes === 1) {
-            onChange(ano - 1, 12);
-        } else {
-            onChange(ano, mes - 1);
-        }
-    }
-
-    function proximo() {
-        if (mes === 12) {
-            onChange(ano + 1, 1);
-        } else {
-            onChange(ano, mes + 1);
-        }
-    }
-
-    const nomeMes = new Date(ano, mes - 1)
-        .toLocaleString("pt-BR", { month: "long" })
-        .toLocaleUpperCase("pt-BR");
-    const rotulo = `${nomeMes} | ${ano}`;
+export default function NavegacaoMes({ mes, onChange }: NavegacaoMesProps) {
+    const nomeMes = MESES[mes - 1] ?? "";
 
     return (
-        <div className="metas-mes">
-            <button type="button" onClick={anterior} aria-label="Mês anterior">
-                ◀
-            </button>
-            <h3>{rotulo}</h3>
-            <button type="button" onClick={proximo} aria-label="Próximo mês">
-                ▶
-            </button>
-        </div>
+        <SeletorPainel
+            rotulo={`${nomeMes.toLocaleUpperCase("pt-BR")} | ${ANO_METAS}`}
+            ariaLabel="Selecionar mês"
+            layout="grade"
+            selecionado={String(mes)}
+            onChange={(id) => onChange(Number(id))}
+            opcoes={MESES.map((nome, index) => ({
+                id: String(index + 1),
+                rotulo: nome
+            }))}
+        />
     );
 }

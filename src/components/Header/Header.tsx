@@ -5,6 +5,7 @@ import { PDFDownloadLink } from "@react-pdf/renderer";
 import { FaUsers, FaBullseye, FaSignOutAlt, FaChartBar } from "react-icons/fa";
 
 import ReportDocument from "./ReportDocument";
+import { nomeLojaExibicao } from "../../models/nomeLoja";
 import type { OpcaoFiltro, Resumo, UsuarioSessao } from "../../models/types";
 
 export type SecaoPainel = "dashboard" | "usuarios" | "metas";
@@ -141,7 +142,7 @@ export default function Header({
                     <select value={loja} onChange={(e) => onLojaChange(e.target.value)}>
                         {lojas.map((item) => (
                             <option key={item.id} value={item.id}>
-                                {item.nome}
+                                {nomeLojaExibicao(item.nome)}
                             </option>
                         ))}
                     </select>

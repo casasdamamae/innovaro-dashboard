@@ -2,20 +2,34 @@ import { useCallback, useEffect, useState } from "react";
 import { fetchLojas } from "../../services/usersService";
 import { fetchMetasMensais, saveMetasMensais } from "../../services/goalsService";
 import type { MetaMensalForm } from "../../models/types";
-import NavegacaoMes from "./NavegacaoMes";
+import { formatBRL } from "../../models/formatters";
+import { nomeLojaExibicao } from "../../models/nomeLoja";
+import ConfirmacaoModal from "../../components/ConfirmacaoModal/ConfirmacaoModal";
+import { CampoInteiro, CampoMoeda } from "./CampoValor";
+import NavegacaoMes, { ANO_METAS } from "./NavegacaoMes";
+
+function assinatura(lista: MetaMensalForm[]) {
+    return lista
+        .map(
+            (item) =>
+                `${item.loja}:${item.meta_mensal}:${item.abre_sabado}:${item.abre_domingo}:${item.feriados}`
+        )
+        .join("|");
+}
 
 export default function MetasMensaisCard() {
-    const hoje = new Date();
     const [metas, setMetas] = useState<MetaMensalForm[]>([]);
-    const [ano, setAno] = useState(hoje.getFullYear());
-    const [mes, setMes] = useState(hoje.getMonth() + 1);
+    const [base, setBase] = useState("");
+    const [mes, setMes] = useState(new Date().getMonth() + 1);
+    const [mesPendente, setMesPendente] = useState<number | null>(null);
     const [salvando, setSalvando] = useState(false);
+    const alterado = assinatura(metas) !== base;
 
     const carregar = useCallback(async () => {
         try {
             const [lojasData, metasData] = await Promise.all([
                 fetchLojas(),
-                fetchMetasMensais({ ano, mes })
+                fetchMetasMensais({ ano: ANO_METAS, mes })
             ]);
 
             const lista = lojasData
@@ -26,7 +40,7 @@ export default function MetasMensaisCard() {
                     return {
                         loja: loja.id,
                         nome: loja.nome,
-                        ano,
+                        ano: ANO_METAS,
                         mes,
                         meta_mensal: meta?.meta_mensal || 0,
                         abre_sabado: meta?.abre_sabado ?? 1,
@@ -36,17 +50,19 @@ export default function MetasMensaisCard() {
                 });
 
             setMetas(lista);
+            setBase(assinatura(lista));
         } catch (erro) {
             console.error(erro);
             alert("Erro ao carregar metas.");
         }
-    }, [ano, mes]);
+    }, [mes]);
 
     async function salvar() {
         setSalvando(true);
 
         try {
             await saveMetasMensais(metas);
+            setBase(assinatura(metas));
             alert("Metas salvas com sucesso.");
         } catch (erro) {
             console.error(erro);
@@ -76,89 +92,127 @@ export default function MetasMensaisCard() {
         );
     }
 
+    function pedirMes(novoMes: number) {
+        if (alterado) {
+            setMesPendente(novoMes);
+            return;
+        }
+
+        setMes(novoMes);
+    }
+
+    function confirmarMes() {
+        if (mesPendente === null) return;
+
+        setMes(mesPendente);
+        setMesPendente(null);
+    }
+
+    const totalMeta = metas.reduce((soma, item) => soma + item.meta_mensal, 0);
+    const totalSabado = metas.filter((item) => item.abre_sabado === 1).length;
+    const totalDomingo = metas.filter((item) => item.abre_domingo === 1).length;
+    const totalFeriados = metas.reduce((soma, item) => soma + item.feriados, 0);
+
     return (
         <article className="metas-card">
-            <h3>🎯 Metas Mensais</h3>
+            <div className="metas-cabeca">
+                <h3>🎯 Metas Mensais</h3>
+                <NavegacaoMes mes={mes} onChange={pedirMes} />
+            </div>
 
-            <NavegacaoMes
-                ano={ano}
-                mes={mes}
-                onChange={(novoAno, novoMes) => {
-                    setAno(novoAno);
-                    setMes(novoMes);
-                }}
-            />
-
+            <div className="metas-resto">
             <div className="metas-tabela">
                 <table>
                     <thead>
                         <tr>
                             <th>Loja</th>
                             <th>Meta Mensal</th>
-                            <th>Sábado</th>
-                            <th>Domingo</th>
+                            <th className="metas-fim-semana-titulo">Fins de Semana</th>
                             <th>Feriados</th>
                         </tr>
                     </thead>
                     <tbody>
                         {metas.map((meta, index) => (
                             <tr key={meta.loja}>
-                                <td>{meta.nome}</td>
+                                <td className="metas-loja-nome">{nomeLojaExibicao(meta.nome)}</td>
                                 <td>
-                                    <input
-                                        type="number"
-                                        value={meta.meta_mensal}
-                                        onChange={(e) =>
-                                            atualizarMeta(
-                                                index,
-                                                "meta_mensal",
-                                                Number(e.target.value)
-                                            )
+                                    <CampoMoeda
+                                        valor={meta.meta_mensal}
+                                        onChange={(valor) =>
+                                            atualizarMeta(index, "meta_mensal", valor)
                                         }
                                     />
                                 </td>
                                 <td>
-                                    <input
-                                        type="checkbox"
-                                        checked={meta.abre_sabado === 1}
-                                        onChange={(e) =>
+                                    <div className="metas-fim-semana">
+                                    <button
+                                        type="button"
+                                        className={
+                                            meta.abre_sabado === 1
+                                                ? "metas-dia metas-dia-selecionado"
+                                                : "metas-dia"
+                                        }
+                                        aria-pressed={meta.abre_sabado === 1}
+                                        onClick={() =>
                                             atualizarMeta(
                                                 index,
                                                 "abre_sabado",
-                                                e.target.checked ? 1 : 0
+                                                meta.abre_sabado === 1 ? 0 : 1
                                             )
                                         }
-                                    />
-                                </td>
-                                <td>
-                                    <input
-                                        type="checkbox"
-                                        checked={meta.abre_domingo === 1}
-                                        onChange={(e) =>
+                                    >
+                                        Sábado
+                                    </button>
+                                    <button
+                                        type="button"
+                                        className={
+                                            meta.abre_domingo === 1
+                                                ? "metas-dia metas-dia-selecionado"
+                                                : "metas-dia"
+                                        }
+                                        aria-pressed={meta.abre_domingo === 1}
+                                        onClick={() =>
                                             atualizarMeta(
                                                 index,
                                                 "abre_domingo",
-                                                e.target.checked ? 1 : 0
+                                                meta.abre_domingo === 1 ? 0 : 1
                                             )
                                         }
-                                    />
+                                    >
+                                        Domingo
+                                    </button>
+                                    </div>
                                 </td>
                                 <td>
-                                    <input
-                                        type="number"
-                                        value={meta.feriados}
-                                        onChange={(e) =>
-                                            atualizarMeta(
-                                                index,
-                                                "feriados",
-                                                Number(e.target.value)
-                                            )
+                                    <CampoInteiro
+                                        valor={meta.feriados}
+                                        onChange={(valor) =>
+                                            atualizarMeta(index, "feriados", valor)
                                         }
                                     />
                                 </td>
                             </tr>
                         ))}
                     </tbody>
+                    {metas.length > 0 && (
+                        <tfoot>
+                            <tr className="metas-totais">
+                                <td>Total</td>
+                                <td>
+                                    <span className="metas-total-valor">{formatBRL(totalMeta)}</span>
+                                </td>
+                                <td>
+                                    <div className="metas-fim-semana">
+                                        <span className="metas-fim-semana-contagem">{totalSabado}</span>
+                                        <span className="metas-fim-semana-contagem">{totalDomingo}</span>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span className="metas-total-valor">{totalFeriados}</span>
+                                </td>
+                            </tr>
+                        </tfoot>
+                    )}
                 </table>
             </div>
 
@@ -167,6 +221,16 @@ export default function MetasMensaisCard() {
                     💾 Salvar Alterações
                 </button>
             </div>
+            </div>
+
+            <ConfirmacaoModal
+                aberto={mesPendente !== null}
+                titulo="Alterações não salvas"
+                mensagem="Há alterações não salvas. Se continuar, elas serão descartadas."
+                textoConfirmar="Continuar"
+                onConfirmar={confirmarMes}
+                onCancelar={() => setMesPendente(null)}
+            />
         </article>
     );
 }

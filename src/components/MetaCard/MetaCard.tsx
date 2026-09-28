@@ -1,27 +1,29 @@
 import "./MetaCard.css";
-import { formatCurrency, formatPercent, formatStatusLabel } from "../../models/formatters";
-import type { MetaDashboard } from "../../models/types";
+import { formatCurrency, formatPercent } from "../../models/formatters";
+import type { MetaDashboard, StatusMeta } from "../../models/types";
 
 type MetaCardProps = {
     meta?: MetaDashboard | null;
+};
+
+const STATUS_META: Record<StatusMeta, { rotulo: string; cor: string }> = {
+    ACIMA_META: { rotulo: "ACIMA DA META", cor: "#43A047" },
+    NO_RITMO: { rotulo: "NO RITMO", cor: "#FB8C00" },
+    ABAIXO_META: { rotulo: "ABAIXO DA META", cor: "#E53935" }
 };
 
 export default function MetaCard({ meta }: MetaCardProps) {
     if (!meta) return null;
 
     const percentual = Math.min(meta.atingimento, 100);
-
-    let cor = "#43A047";
-
-    if (meta.status === "ABAIXO_META") cor = "#E53935";
-    if (meta.status === "NO_RITMO") cor = "#FB8C00";
+    const { rotulo, cor } = STATUS_META[meta.status];
 
     return (
         <div className="meta-card">
             <div className="meta-topo">
                 <h3>🎯 Meta do Mês</h3>
                 <span className="status" style={{ background: cor }}>
-                    {formatStatusLabel(meta.status)}
+                    {rotulo}
                 </span>
             </div>
 

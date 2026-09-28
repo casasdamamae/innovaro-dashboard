@@ -1,3 +1,8 @@
+.usuarios-pagina {
+    --color-primary: #1565c0;
+    --color-primary-light: #e3f2fd;
+}
+
 .usuarios-pagina h2 {
     margin: 0 0 20px;
     color: #1565c0;
@@ -18,7 +23,7 @@
     min-width: 0;
 }
 
-.usuarios-listagem {
+.usuarios-tabela {
     overflow-x: auto;
 }
 
@@ -213,39 +218,56 @@
     align-items: center;
     justify-content: space-between;
     gap: 12px;
-    margin-top: 16px;
-    flex-wrap: wrap;
+    margin-bottom: 16px;
 }
 
-.usuarios-paginacao p {
+.usuarios-total {
     margin: 0;
-    font-size: 14px;
-    color: #333;
+    font-size: 13px;
+    font-weight: 400;
+    color: #6b7280;
 }
 
-.usuarios-paginacao-botoes {
+.usuarios-paginacao-controles {
     display: flex;
-    gap: 8px;
+    align-items: center;
+    gap: 4px;
 }
 
 .usuarios-paginacao button {
-    height: 36px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    padding: 0;
     border: none;
     border-radius: 6px;
-    padding: 0 14px;
-    background: #1565c0;
-    color: #fff;
+    background: transparent;
+    color: var(--color-primary);
     cursor: pointer;
-    font-weight: 600;
 }
 
-.usuarios-paginacao button:hover {
-    background: #0d47a1;
+.usuarios-paginacao button:hover:not(:disabled) {
+    background: var(--color-primary-light);
+}
+
+.usuarios-paginacao button:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
 }
 
 .usuarios-paginacao button:disabled {
-    opacity: 0.5;
+    opacity: 0.35;
     cursor: not-allowed;
+}
+
+.usuarios-pagina-indicador {
+    min-width: 4.75rem;
+    text-align: center;
+    font-size: 14px;
+    font-variant-numeric: tabular-nums;
+    color: #333;
 }
 
 @media (max-width: 992px) {

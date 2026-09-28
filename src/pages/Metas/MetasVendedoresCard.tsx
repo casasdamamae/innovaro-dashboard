@@ -1,32 +1,47 @@
 import { useCallback, useEffect, useState } from "react";
+import { ChevronFirst, ChevronLast, ChevronLeft, ChevronRight } from "lucide-react";
 import { fetchLojas } from "../../services/usersService";
 import { fetchMetasVendedores, saveMetasVendedores } from "../../services/goalsService";
 import {
     fetchVendedoresPorLoja,
     LIMITE_VENDEDORES
 } from "../../services/vendedoresService";
+import { nomeLojaExibicao, ordenarLojas } from "../../models/nomeLoja";
 import type { Loja, MetaVendedorForm } from "../../models/types";
-import NavegacaoMes from "./NavegacaoMes";
+import ConfirmacaoModal from "../../components/ConfirmacaoModal/ConfirmacaoModal";
+import { CampoMoeda } from "./CampoValor";
+import NavegacaoMes, { ANO_METAS } from "./NavegacaoMes";
+import SeletorPainel from "./SeletorPainel";
+
+type Pendencia =
+    | { tipo: "mes"; mes: number }
+    | { tipo: "pagina"; pagina: number }
+    | { tipo: "loja"; loja: string };
+
+function assinatura(lista: MetaVendedorForm[]) {
+    return lista.map((item) => `${item.codigo_vendedor}:${item.meta}`).join("|");
+}
 
 export default function MetasVendedoresCard() {
-    const hoje = new Date();
-    const [ano, setAno] = useState(hoje.getFullYear());
-    const [mes, setMes] = useState(hoje.getMonth() + 1);
+    const [mes, setMes] = useState(new Date().getMonth() + 1);
     const [lojas, setLojas] = useState<Loja[]>([]);
     const [loja, setLoja] = useState("");
     const [vendedores, setVendedores] = useState<MetaVendedorForm[]>([]);
+    const [base, setBase] = useState("");
     const [pagina, setPagina] = useState(1);
     const [total, setTotal] = useState(0);
-    const [totalPaginas, setTotalPaginas] = useState(0);
     const [listaCarregada, setListaCarregada] = useState(false);
     const [salvando, setSalvando] = useState(false);
+    const [pendencia, setPendencia] = useState<Pendencia | null>(null);
+    const alterado = assinatura(vendedores) !== base;
+    const totalPaginas = Math.max(1, Math.ceil(total / LIMITE_VENDEDORES));
+    const paginaAtual = Math.min(Math.max(pagina, 1), totalPaginas);
+    const naPrimeira = paginaAtual <= 1;
+    const naUltima = paginaAtual >= totalPaginas;
 
     const carregarLojas = useCallback(async () => {
         const data = await fetchLojas();
-        const todas = data.filter((item) => item.id === "TODAS");
-        const demais = data.filter((item) => item.id !== "TODAS");
-
-        setLojas([...demais, ...todas]);
+        setLojas(ordenarLojas(data));
         setLoja((atual) => atual || data[0]?.id || "");
     }, []);
 
@@ -35,7 +50,7 @@ export default function MetasVendedoresCard() {
 
         const [paginaVendedores, metasData] = await Promise.all([
             fetchVendedoresPorLoja(loja, pagina, LIMITE_VENDEDORES),
-            fetchMetasVendedores({ ano, mes, loja })
+            fetchMetasVendedores({ ano: ANO_METAS, mes, loja })
         ]);
 
         const lista = paginaVendedores.dados.map((vendedor) => {
@@ -44,7 +59,7 @@ export default function MetasVendedoresCard() {
             );
 
             return {
-                ano,
+                ano: ANO_METAS,
                 mes,
                 codigo_loja: loja,
                 codigo_vendedor: vendedor.codigo_vendedor,
@@ -54,16 +69,17 @@ export default function MetasVendedoresCard() {
         });
 
         setVendedores(lista);
+        setBase(assinatura(lista));
         setTotal(paginaVendedores.total);
-        setTotalPaginas(paginaVendedores.totalPaginas);
         setListaCarregada(true);
-    }, [ano, mes, loja, pagina]);
+    }, [mes, loja, pagina]);
 
     async function salvar() {
         setSalvando(true);
 
         try {
             await saveMetasVendedores(vendedores);
+            setBase(assinatura(vendedores));
             alert("Metas salvas com sucesso.");
         } catch (erro) {
             console.error(erro);
@@ -105,36 +121,106 @@ export default function MetasVendedoresCard() {
         );
     }
 
+    function aplicar(acao: Pendencia) {
+        if (acao.tipo === "mes") setMes(acao.mes);
+        if (acao.tipo === "pagina") setPagina(acao.pagina);
+        if (acao.tipo === "loja") {
+            setLoja(acao.loja);
+            setPagina(1);
+        }
+    }
+
+    function solicitar(acao: Pendencia) {
+        if (alterado) {
+            setPendencia(acao);
+            return;
+        }
+
+        aplicar(acao);
+    }
+
+    function confirmarPendencia() {
+        if (!pendencia) return;
+
+        aplicar(pendencia);
+        setPendencia(null);
+    }
+
     return (
         <article className="metas-card">
-            <h3>👤 Metas Vendedores</h3>
+            <div className="metas-cabeca">
+            <div className="metas-card-topo">
+                <div className="metas-card-titulo">
+                    <h3>👤 Metas Vendedores</h3>
+                    <p className="metas-total">Total: {total}</p>
+                </div>
 
-            <NavegacaoMes
-                ano={ano}
-                mes={mes}
-                onChange={(novoAno, novoMes) => {
-                    setAno(novoAno);
-                    setMes(novoMes);
-                }}
-            />
+                <div className="metas-paginacao">
+                    <button
+                        type="button"
+                        aria-label="Primeira página"
+                        disabled={naPrimeira}
+                        onClick={() => solicitar({ tipo: "pagina", pagina: 1 })}
+                    >
+                        <ChevronFirst size={18} strokeWidth={2.5} aria-hidden="true" />
+                    </button>
+                    <button
+                        type="button"
+                        aria-label="Página anterior"
+                        disabled={naPrimeira}
+                        onClick={() => solicitar({ tipo: "pagina", pagina: paginaAtual - 1 })}
+                    >
+                        <ChevronLeft size={18} strokeWidth={2.5} aria-hidden="true" />
+                    </button>
+                    <span className="metas-pagina-indicador">
+                        {paginaAtual} de {totalPaginas}
+                    </span>
+                    <button
+                        type="button"
+                        aria-label="Próxima página"
+                        disabled={naUltima}
+                        onClick={() => solicitar({ tipo: "pagina", pagina: paginaAtual + 1 })}
+                    >
+                        <ChevronRight size={18} strokeWidth={2.5} aria-hidden="true" />
+                    </button>
+                    <button
+                        type="button"
+                        aria-label="Última página"
+                        disabled={naUltima}
+                        onClick={() => solicitar({ tipo: "pagina", pagina: totalPaginas })}
+                    >
+                        <ChevronLast size={18} strokeWidth={2.5} aria-hidden="true" />
+                    </button>
+                </div>
+            </div>
 
-            <label className="metas-loja">
-                Loja
-                <select
-                    value={loja}
-                    onChange={(e) => {
-                        setLoja(e.target.value);
-                        setPagina(1);
-                    }}
-                >
-                    {lojas.map((item) => (
-                        <option key={item.id} value={item.id}>
-                            {item.nome}
-                        </option>
-                    ))}
-                </select>
-            </label>
+            <div className="metas-linha-mes">
+                <div className="metas-linha-mes-lado" />
+                <NavegacaoMes
+                    mes={mes}
+                    onChange={(novoMes) => solicitar({ tipo: "mes", mes: novoMes })}
+                />
+                <div className="metas-linha-mes-lado">
+                    <SeletorPainel
+                        rotulo={nomeLojaExibicao(
+                            lojas.find((item) => item.id === loja)?.nome ?? ""
+                        )}
+                        ariaLabel="Selecionar loja"
+                        layout="lista"
+                        compacto
+                        ancora="direita"
+                        selecionado={loja}
+                        onChange={(id) => solicitar({ tipo: "loja", loja: id })}
+                        opcoes={lojas.map((item) => ({
+                            id: item.id,
+                            rotulo: nomeLojaExibicao(item.nome)
+                        }))}
+                    />
+                </div>
+            </div>
+            </div>
 
+            <div className="metas-resto">
             <div className="metas-tabela">
                 <table>
                     <thead>
@@ -153,12 +239,9 @@ export default function MetasVendedoresCard() {
                                 <tr key={vendedor.codigo_vendedor}>
                                     <td>{vendedor.nome_vendedor}</td>
                                     <td>
-                                        <input
-                                            type="number"
-                                            value={vendedor.meta}
-                                            onChange={(e) =>
-                                                atualizarMeta(index, Number(e.target.value))
-                                            }
+                                        <CampoMoeda
+                                            valor={vendedor.meta}
+                                            onChange={(valor) => atualizarMeta(index, valor)}
                                         />
                                     </td>
                                 </tr>
@@ -168,34 +251,21 @@ export default function MetasVendedoresCard() {
                 </table>
             </div>
 
-            <div className="metas-paginacao">
-                <p>
-                    {total} vendedores · Página {Math.max(pagina, 1)} de{" "}
-                    {Math.max(totalPaginas, 1)}
-                </p>
-                <div className="metas-paginacao-botoes">
-                    <button
-                        type="button"
-                        onClick={() => setPagina((atual) => atual - 1)}
-                        disabled={pagina <= 1}
-                    >
-                        Anterior
-                    </button>
-                    <button
-                        type="button"
-                        onClick={() => setPagina((atual) => atual + 1)}
-                        disabled={pagina >= totalPaginas}
-                    >
-                        Próxima
-                    </button>
-                </div>
-            </div>
-
             <div className="metas-salvar">
                 <button type="button" onClick={() => void salvar()} disabled={salvando}>
                     💾 Salvar Alterações
                 </button>
             </div>
+            </div>
+
+            <ConfirmacaoModal
+                aberto={pendencia !== null}
+                titulo="Alterações não salvas"
+                mensagem="Há alterações não salvas. Se continuar, elas serão descartadas."
+                textoConfirmar="Continuar"
+                onConfirmar={confirmarPendencia}
+                onCancelar={() => setPendencia(null)}
+            />
         </article>
     );
 }

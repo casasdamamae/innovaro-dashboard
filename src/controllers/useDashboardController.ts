@@ -7,6 +7,7 @@ import {
     fetchSetoresResumo,
     fetchStatus
 } from "../services/dashboardService";
+import { ordenarLojas } from "../models/nomeLoja";
 import { getStoredUser } from "../models/session";
 import { marcadorStatus } from "../models/status";
 import type { OpcaoFiltro, Resumo, UsuarioSessao } from "../models/types";
@@ -69,7 +70,7 @@ export function useDashboardController(): DashboardController {
                 fetchSetoresResumo()
             ]);
 
-            setLojas(lojasData);
+            setLojas(ordenarLojas(lojasData));
             setFornecedores(fornecedoresData);
             setSetores(setoresData);
         } catch (error) {
