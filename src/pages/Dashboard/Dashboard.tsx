@@ -11,9 +11,8 @@ import MetaCard from "../../components/MetaCard/MetaCard";
 import HoraChart from "../../components/Charts/HoraChart";
 import BarChartCard from "../../components/Charts/BarChartCard";
 import RankingCard from "../../components/RankingCard/RankingCard";
-import MetasModal from "../../components/MetasModal/MetasModal";
 import Usuarios from "../Usuarios/Usuarios";
-import MetasVendedoresModal from "../../components/MetasVendedoresModal/MetasVendedoresModal";
+import ControleMetas from "../Metas/ControleMetas";
 
 import {
     FaMoneyBillWave,
@@ -170,26 +169,16 @@ export default function Dashboard() {
         setor,
         setores,
         graficoLoja,
-        metasAberto,
-        metasVendedoresAberto,
         setInicio,
         setFim,
         setLoja,
         setFornecedor,
         setSetor,
         atualizar,
-        registrarGraficoLoja,
-        abrirMetas,
-        fecharMetas,
-        abrirMetasVendedores,
-        fecharMetasVendedores
+        registrarGraficoLoja
     } = useDashboard();
 
     const [secao, setSecao] = useState<SecaoPainel>("dashboard");
-
-    function trocarSecao() {
-        setSecao((atual) => (atual === "dashboard" ? "usuarios" : "dashboard"));
-    }
 
     return (
         <>
@@ -212,9 +201,7 @@ export default function Dashboard() {
                 onSetorChange={setSetor}
                 onRefresh={atualizar}
                 secao={secao}
-                onTrocarSecao={trocarSecao}
-                onOpenMetas={abrirMetas}
-                onOpenMetasVendedores={abrirMetasVendedores}
+                onSelecionarSecao={setSecao}
                 onLogout={encerrarSessao}
                 graficoLoja={graficoLoja}
             />
@@ -222,6 +209,8 @@ export default function Dashboard() {
             <main className="dashboard">
                 {secao === "usuarios" ? (
                     <Usuarios />
+                ) : secao === "metas" ? (
+                    <ControleMetas />
                 ) : isInitialLoading ? (
                     <h2>Carregando dashboard...</h2>
                 ) : erroInicial || !dados ? (
@@ -238,12 +227,6 @@ export default function Dashboard() {
                     />
                 )}
             </main>
-
-            <MetasModal aberto={metasAberto} fechar={fecharMetas} />
-            <MetasVendedoresModal
-                aberto={metasVendedoresAberto}
-                fechar={fecharMetasVendedores}
-            />
         </>
     );
 }

@@ -7,7 +7,13 @@ import { FaUsers, FaBullseye, FaSignOutAlt, FaChartBar } from "react-icons/fa";
 import ReportDocument from "./ReportDocument";
 import type { OpcaoFiltro, Resumo, UsuarioSessao } from "../../models/types";
 
-export type SecaoPainel = "dashboard" | "usuarios";
+export type SecaoPainel = "dashboard" | "usuarios" | "metas";
+
+const DESTINOS: Record<SecaoPainel, SecaoPainel[]> = {
+    dashboard: ["usuarios", "metas"],
+    usuarios: ["dashboard", "metas"],
+    metas: ["usuarios", "dashboard"]
+};
 
 type HeaderProps = {
     usuario: UsuarioSessao | null;
@@ -29,9 +35,7 @@ type HeaderProps = {
     isRefreshing?: boolean;
     onRefresh: () => void;
     secao: SecaoPainel;
-    onTrocarSecao: () => void;
-    onOpenMetas: () => void;
-    onOpenMetasVendedores: () => void;
+    onSelecionarSecao: (secao: SecaoPainel) => void;
     onLogout: () => void;
 };
 
@@ -55,9 +59,7 @@ export default function Header({
     isRefreshing = false,
     onRefresh,
     secao,
-    onTrocarSecao,
-    onOpenMetas,
-    onOpenMetasVendedores,
+    onSelecionarSecao,
     onLogout
 }: HeaderProps) {
     const [horaAtual, setHoraAtual] = useState(
@@ -176,32 +178,33 @@ export default function Header({
                 <div className="botoes-header">
                     <button onClick={onRefresh}>🔄 Atualizar</button>
 
-                    {ehAdmin && (
-                        <>
-                            <button type="button" onClick={onTrocarSecao}>
-                                {secao === "usuarios" ? (
+                    {ehAdmin &&
+                        DESTINOS[secao].map((destino) => (
+                            <button
+                                key={destino}
+                                type="button"
+                                onClick={() => onSelecionarSecao(destino)}
+                            >
+                                {destino === "dashboard" && (
                                     <>
                                         <FaChartBar />
                                         &nbsp;Dashboard
                                     </>
-                                ) : (
+                                )}
+                                {destino === "usuarios" && (
                                     <>
                                         <FaUsers />
                                         &nbsp;Administração de Usuários
                                     </>
                                 )}
+                                {destino === "metas" && (
+                                    <>
+                                        <FaBullseye />
+                                        &nbsp;Controle de Metas
+                                    </>
+                                )}
                             </button>
-
-                            <button onClick={onOpenMetas}>
-                                <FaBullseye />
-                                &nbsp;Metas
-                            </button>
-
-                            <button onClick={onOpenMetasVendedores}>
-                                🎯&nbsp;Metas Vendedores
-                            </button>
-                        </>
-                    )}
+                        ))}
 
                     {dados && (
                         <PDFDownloadLink
