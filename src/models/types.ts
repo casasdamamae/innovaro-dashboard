@@ -186,6 +186,15 @@ export type MetaMensalForm = {
 export type Vendedor = {
     codigo_vendedor: string | number;
     nome_vendedor: string;
+    lojas: number[];
+};
+
+export type PaginaVendedores = {
+    dados: Vendedor[];
+    pagina: number;
+    limite: number;
+    total: number;
+    totalPaginas: number;
 };
 
 export type MetaVendedorSalva = {

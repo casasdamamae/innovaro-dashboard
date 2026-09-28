@@ -1,7 +1,15 @@
 import api from "./api";
-import type { Vendedor } from "../models/types";
+import type { PaginaVendedores } from "../models/types";
 
-export async function fetchVendedoresPorLoja(loja: string) {
-    const { data } = await api.get<Vendedor[]>(`/vendedores?loja=${loja}`);
+export const LIMITE_VENDEDORES = 20;
+
+export async function fetchVendedoresPorLoja(
+    loja: string,
+    pagina = 1,
+    limite = LIMITE_VENDEDORES
+) {
+    const { data } = await api.get<PaginaVendedores>("/vendedores", {
+        params: { loja, pagina, limite }
+    });
     return data;
 }

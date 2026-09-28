@@ -28,8 +28,6 @@ export type DashboardController = {
     setor: string;
     setores: OpcaoFiltro[];
     graficoLoja: string | null;
-    metasAberto: boolean;
-    metasVendedoresAberto: boolean;
     setInicio: Dispatch<SetStateAction<string>>;
     setFim: Dispatch<SetStateAction<string>>;
     setLoja: Dispatch<SetStateAction<string>>;
@@ -37,10 +35,6 @@ export type DashboardController = {
     setSetor: Dispatch<SetStateAction<string>>;
     atualizar: () => Promise<void>;
     registrarGraficoLoja: (imagem: string) => void;
-    abrirMetas: () => void;
-    fecharMetas: () => void;
-    abrirMetasVendedores: () => void;
-    fecharMetasVendedores: () => void;
 };
 
 export function useDashboardController(): DashboardController {
@@ -59,9 +53,6 @@ export function useDashboardController(): DashboardController {
     const [isRefreshing, setIsRefreshing] = useState(false);
     const [erroInicial, setErroInicial] = useState(false);
     const [graficoLoja, setGraficoLoja] = useState<string | null>(null);
-
-    const [metasAberto, setMetasAberto] = useState(false);
-    const [metasVendedoresAberto, setMetasVendedoresAberto] = useState(false);
 
     const dadosRef = useRef<Resumo | null>(null);
     const marcadorRef = useRef<string | null>(null);
@@ -179,22 +170,6 @@ export function useDashboardController(): DashboardController {
         setGraficoLoja(imagem);
     }, []);
 
-    function abrirMetas() {
-        setMetasAberto(true);
-    }
-
-    function fecharMetas() {
-        setMetasAberto(false);
-    }
-
-    function abrirMetasVendedores() {
-        setMetasVendedoresAberto(true);
-    }
-
-    function fecharMetasVendedores() {
-        setMetasVendedoresAberto(false);
-    }
-
     return {
         dados,
         isInitialLoading,
@@ -210,18 +185,12 @@ export function useDashboardController(): DashboardController {
         setor,
         setores,
         graficoLoja,
-        metasAberto,
-        metasVendedoresAberto,
         setInicio,
         setFim,
         setLoja,
         setFornecedor,
         setSetor,
         atualizar,
-        registrarGraficoLoja,
-        abrirMetas,
-        fecharMetas,
-        abrirMetasVendedores,
-        fecharMetasVendedores
+        registrarGraficoLoja
     };
 }
