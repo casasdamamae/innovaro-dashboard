@@ -160,15 +160,20 @@
     cursor: pointer;
 }
 
-.metas-fim-semana .metas-dia:hover {
+.metas-fim-semana .metas-dia:hover:not(:disabled) {
     background: var(--color-primary-light);
+}
+
+.metas-fim-semana .metas-dia:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
 }
 
 .metas-fim-semana .metas-dia-selecionado {
     background: var(--color-primary-light-hover);
 }
 
-.metas-fim-semana .metas-dia-selecionado:hover {
+.metas-fim-semana .metas-dia-selecionado:hover:not(:disabled) {
     background: var(--color-primary-light-active);
 }
 
@@ -193,6 +198,13 @@
 .metas-card input[type="number"]:focus {
     outline: none;
     border-color: #1565c0;
+}
+
+.metas-card input[type="text"]:disabled,
+.metas-card input[type="number"]:disabled {
+    background: #f3f3f3;
+    color: #555;
+    cursor: not-allowed;
 }
 
 .metas-tabela {
