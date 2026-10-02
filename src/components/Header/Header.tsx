@@ -5,6 +5,7 @@ import { PDFDownloadLink } from "@react-pdf/renderer";
 import { FaUsers, FaBullseye, FaSignOutAlt, FaChartBar } from "react-icons/fa";
 
 import ReportDocument from "./ReportDocument";
+import SeletorData from "./SeletorData";
 import SeletorPainel from "../../pages/Metas/SeletorPainel";
 import { nomeLojaExibicao } from "../../models/nomeLoja";
 import type { OpcaoFiltro, Resumo, UsuarioSessao } from "../../models/types";
@@ -121,20 +122,22 @@ export default function Header({
 
             <div className="header-filtros">
                 <div className="campo">
-                    <label>Data Inicial</label>
-                    <input
-                        type="date"
-                        value={inicio}
-                        onChange={(e) => onInicioChange(e.target.value)}
+                    <label htmlFor="filtro-inicio">Data Inicial</label>
+                    <SeletorData
+                        id="filtro-inicio"
+                        valor={inicio}
+                        ariaLabel="Data Inicial"
+                        onChange={onInicioChange}
                     />
                 </div>
 
                 <div className="campo">
-                    <label>Data Final</label>
-                    <input
-                        type="date"
-                        value={fim}
-                        onChange={(e) => onFimChange(e.target.value)}
+                    <label htmlFor="filtro-fim">Data Final</label>
+                    <SeletorData
+                        id="filtro-fim"
+                        valor={fim}
+                        ariaLabel="Data Final"
+                        onChange={onFimChange}
                     />
                 </div>
 

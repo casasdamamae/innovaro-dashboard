@@ -106,7 +106,8 @@
 
 }
 
-.campo .metas-mes{
+.campo .metas-mes,
+.campo .seletor-data{
     width:180px;
     margin-bottom:0;
 }
@@ -222,7 +223,8 @@
 
     .campo input,
     .campo select,
-    .campo .metas-mes{
+    .campo .metas-mes,
+    .campo .seletor-data{
 
         width:160px;
 
@@ -298,7 +300,8 @@
 
     .campo input,
     .campo select,
-    .campo .metas-mes{
+    .campo .metas-mes,
+    .campo .seletor-data{
 
         width:100%;
 
