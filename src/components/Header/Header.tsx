@@ -5,6 +5,8 @@ import { PDFDownloadLink } from "@react-pdf/renderer";
 import { FaUsers, FaBullseye, FaSignOutAlt, FaChartBar } from "react-icons/fa";
 
 import ReportDocument from "./ReportDocument";
+import SeletorData from "./SeletorData";
+import SeletorPainel from "../../pages/Metas/SeletorPainel";
 import { nomeLojaExibicao } from "../../models/nomeLoja";
 import type { OpcaoFiltro, Resumo, UsuarioSessao } from "../../models/types";
 
@@ -120,60 +122,81 @@ export default function Header({
 
             <div className="header-filtros">
                 <div className="campo">
-                    <label>Data Inicial</label>
-                    <input
-                        type="date"
-                        value={inicio}
-                        onChange={(e) => onInicioChange(e.target.value)}
+                    <label htmlFor="filtro-inicio">Data Inicial</label>
+                    <SeletorData
+                        id="filtro-inicio"
+                        valor={inicio}
+                        ariaLabel="Data Inicial"
+                        onChange={onInicioChange}
                     />
                 </div>
 
                 <div className="campo">
-                    <label>Data Final</label>
-                    <input
-                        type="date"
-                        value={fim}
-                        onChange={(e) => onFimChange(e.target.value)}
+                    <label htmlFor="filtro-fim">Data Final</label>
+                    <SeletorData
+                        id="filtro-fim"
+                        valor={fim}
+                        ariaLabel="Data Final"
+                        onChange={onFimChange}
                     />
                 </div>
 
                 <div className="campo">
-                    <label>Loja</label>
-                    <select value={loja} onChange={(e) => onLojaChange(e.target.value)}>
-                        {lojas.map((item) => (
-                            <option key={item.id} value={item.id}>
-                                {nomeLojaExibicao(item.nome)}
-                            </option>
-                        ))}
-                    </select>
+                    <label htmlFor="filtro-loja">Loja</label>
+                    <SeletorPainel
+                        id="filtro-loja"
+                        rotulo={nomeLojaExibicao(
+                            lojas.find((item) => item.id === loja)?.nome ?? ""
+                        )}
+                        ariaLabel="Loja"
+                        layout="lista"
+                        compacto
+                        larguraCheia
+                        selecionado={loja}
+                        onChange={onLojaChange}
+                        opcoes={lojas.map((item) => ({
+                            id: item.id,
+                            rotulo: nomeLojaExibicao(item.nome)
+                        }))}
+                    />
                 </div>
 
                 <div className="campo">
-                    <label>Fornecedor</label>
-                    <select
-                        value={fornecedor}
-                        onChange={(e) => onFornecedorChange(e.target.value)}
-                    >
-                        {fornecedores.map((item) => (
-                            <option key={item.id} value={item.id}>
-                                {item.nome}
-                            </option>
-                        ))}
-                    </select>
+                    <label htmlFor="filtro-fornecedor">Fornecedor</label>
+                    <SeletorPainel
+                        id="filtro-fornecedor"
+                        rotulo={
+                            fornecedores.find((item) => item.id === fornecedor)?.nome ?? ""
+                        }
+                        ariaLabel="Fornecedor"
+                        layout="lista"
+                        compacto
+                        larguraCheia
+                        selecionado={fornecedor}
+                        onChange={onFornecedorChange}
+                        opcoes={fornecedores.map((item) => ({
+                            id: item.id,
+                            rotulo: item.nome
+                        }))}
+                    />
                 </div>
 
                 <div className="campo">
-                    <label>Setor</label>
-                    <select
-                        value={setor}
-                        onChange={(e) => onSetorChange(e.target.value)}
-                    >
-                        {setores.map((item) => (
-                            <option key={item.id} value={item.id}>
-                                {item.nome}
-                            </option>
-                        ))}
-                    </select>
+                    <label htmlFor="filtro-setor">Setor</label>
+                    <SeletorPainel
+                        id="filtro-setor"
+                        rotulo={setores.find((item) => item.id === setor)?.nome ?? ""}
+                        ariaLabel="Setor"
+                        layout="lista"
+                        compacto
+                        larguraCheia
+                        selecionado={setor}
+                        onChange={onSetorChange}
+                        opcoes={setores.map((item) => ({
+                            id: item.id,
+                            rotulo: item.nome
+                        }))}
+                    />
                 </div>
 
                 <div className="botoes-header">

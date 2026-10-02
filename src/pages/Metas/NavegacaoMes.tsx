@@ -2,6 +2,14 @@ import SeletorPainel from "./SeletorPainel";
 
 export const ANO_METAS = 2026;
 
+export function mesEditavel(mes: number, hoje = new Date()) {
+    const anoAtual = hoje.getFullYear();
+
+    if (ANO_METAS !== anoAtual) return ANO_METAS > anoAtual;
+
+    return mes >= hoje.getMonth() + 1;
+}
+
 const MESES = [
     "Janeiro",
     "Fevereiro",

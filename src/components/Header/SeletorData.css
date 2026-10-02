@@ -1,0 +1,132 @@
+.seletor-data {
+    --color-primary: #1565c0;
+    --color-primary-light: #e3f2fd;
+    --color-primary-light-hover: #bbdefb;
+    position: relative;
+    width: 100%;
+}
+
+.seletor-data-campo {
+    width: 100%;
+}
+
+.seletor-data-campo:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+}
+
+.seletor-data-painel {
+    position: absolute;
+    top: calc(100% + 8px);
+    left: 0;
+    z-index: 50;
+    box-sizing: border-box;
+    width: 280px;
+    padding: 12px;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.16);
+    color: var(--color-primary);
+}
+
+.seletor-data-cabeca {
+    display: grid;
+    grid-template-columns: 36px 1fr 36px;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+}
+
+.seletor-data-cabeca strong {
+    text-align: center;
+    font-size: 16px;
+    font-weight: 700;
+}
+
+.seletor-data-nav,
+.seletor-data-acao {
+    border: none;
+    background: transparent;
+    color: var(--color-primary);
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.seletor-data-nav {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 6px;
+}
+
+.seletor-data-nav:hover,
+.seletor-data-acao:hover {
+    background: var(--color-primary-light);
+}
+
+.seletor-data-nav:focus-visible,
+.seletor-data-acao:focus-visible,
+.seletor-data-dia:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+}
+
+.seletor-data-semana,
+.seletor-data-linha {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+}
+
+.seletor-data-semana {
+    margin-bottom: 4px;
+}
+
+.seletor-data-semana span {
+    text-align: center;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.seletor-data-dia {
+    height: 36px;
+    border: 1px solid transparent;
+    border-radius: 6px;
+    background: transparent;
+    color: var(--color-primary);
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.seletor-data-dia:hover {
+    background: var(--color-primary-light-hover);
+}
+
+.seletor-data-dia-outro {
+    opacity: 0.45;
+}
+
+.seletor-data-dia-hoje {
+    border-color: var(--color-primary);
+}
+
+.seletor-data-dia-selecionado,
+.seletor-data-dia-selecionado:hover {
+    background: #1565c0;
+    border-color: #1565c0;
+    color: #fff;
+    opacity: 1;
+}
+
+.seletor-data-rodape {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 8px;
+}
+
+.seletor-data-acao {
+    border-radius: 6px;
+    padding: 6px 8px;
+    font-size: 14px;
+}

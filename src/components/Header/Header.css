@@ -1,5 +1,8 @@
 .header{
 
+    position:relative;
+    z-index:20;
+
     background:linear-gradient(to bottom, #0188ff, #f5f7fb);
     color:#FFF;
     padding:20px 30px;
@@ -101,6 +104,20 @@
     margin-bottom:6px;
     font-weight:600;
 
+}
+
+.campo .metas-mes,
+.campo .seletor-data{
+    width:180px;
+    margin-bottom:0;
+}
+
+.campo .metas-mes-bloco .metas-mes-painel{
+    left:0;
+    transform:none;
+    width:max-content;
+    min-width:100%;
+    max-width:min(360px, 80vw);
 }
 
 .campo input,
@@ -205,7 +222,9 @@
     }
 
     .campo input,
-    .campo select{
+    .campo select,
+    .campo .metas-mes,
+    .campo .seletor-data{
 
         width:160px;
 
@@ -280,7 +299,9 @@
     }
 
     .campo input,
-    .campo select{
+    .campo select,
+    .campo .metas-mes,
+    .campo .seletor-data{
 
         width:100%;
 

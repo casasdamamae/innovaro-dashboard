@@ -10,7 +10,7 @@ import { nomeLojaExibicao, ordenarLojas } from "../../models/nomeLoja";
 import type { Loja, MetaVendedorForm } from "../../models/types";
 import ConfirmacaoModal from "../../components/ConfirmacaoModal/ConfirmacaoModal";
 import { CampoMoeda } from "./CampoValor";
-import NavegacaoMes, { ANO_METAS } from "./NavegacaoMes";
+import NavegacaoMes, { ANO_METAS, mesEditavel } from "./NavegacaoMes";
 import SeletorPainel from "./SeletorPainel";
 
 type Pendencia =
@@ -34,6 +34,7 @@ export default function MetasVendedoresCard() {
     const [salvando, setSalvando] = useState(false);
     const [pendencia, setPendencia] = useState<Pendencia | null>(null);
     const alterado = assinatura(vendedores) !== base;
+    const somenteLeitura = !mesEditavel(mes);
     const totalPaginas = Math.max(1, Math.ceil(total / LIMITE_VENDEDORES));
     const paginaAtual = Math.min(Math.max(pagina, 1), totalPaginas);
     const naPrimeira = paginaAtual <= 1;
@@ -75,6 +76,8 @@ export default function MetasVendedoresCard() {
     }, [mes, loja, pagina]);
 
     async function salvar() {
+        if (!mesEditavel(mes)) return;
+
         setSalvando(true);
 
         try {
@@ -114,6 +117,8 @@ export default function MetasVendedoresCard() {
     }, [loja, carregarVendedores]);
 
     function atualizarMeta(index: number, valor: number) {
+        if (!mesEditavel(mes)) return;
+
         setVendedores((lista) =>
             lista.map((item, itemIndex) =>
                 itemIndex === index ? { ...item, meta: valor } : item
@@ -241,6 +246,7 @@ export default function MetasVendedoresCard() {
                                     <td>
                                         <CampoMoeda
                                             valor={vendedor.meta}
+                                            desabilitado={somenteLeitura}
                                             onChange={(valor) => atualizarMeta(index, valor)}
                                         />
                                     </td>
@@ -252,7 +258,11 @@ export default function MetasVendedoresCard() {
             </div>
 
             <div className="metas-salvar">
-                <button type="button" onClick={() => void salvar()} disabled={salvando}>
+                <button
+                    type="button"
+                    onClick={() => void salvar()}
+                    disabled={salvando || somenteLeitura}
+                >
                     💾 Salvar Alterações
                 </button>
             </div>

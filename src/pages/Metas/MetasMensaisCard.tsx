@@ -6,7 +6,7 @@ import { formatBRL } from "../../models/formatters";
 import { nomeLojaExibicao } from "../../models/nomeLoja";
 import ConfirmacaoModal from "../../components/ConfirmacaoModal/ConfirmacaoModal";
 import { CampoInteiro, CampoMoeda } from "./CampoValor";
-import NavegacaoMes, { ANO_METAS } from "./NavegacaoMes";
+import NavegacaoMes, { ANO_METAS, mesEditavel } from "./NavegacaoMes";
 
 function assinatura(lista: MetaMensalForm[]) {
     return lista
@@ -24,6 +24,7 @@ export default function MetasMensaisCard() {
     const [mesPendente, setMesPendente] = useState<number | null>(null);
     const [salvando, setSalvando] = useState(false);
     const alterado = assinatura(metas) !== base;
+    const somenteLeitura = !mesEditavel(mes);
 
     const carregar = useCallback(async () => {
         try {
@@ -58,6 +59,8 @@ export default function MetasMensaisCard() {
     }, [mes]);
 
     async function salvar() {
+        if (!mesEditavel(mes)) return;
+
         setSalvando(true);
 
         try {
@@ -85,6 +88,8 @@ export default function MetasMensaisCard() {
         campo: "meta_mensal" | "abre_sabado" | "abre_domingo" | "feriados",
         valor: number
     ) {
+        if (!mesEditavel(mes)) return;
+
         setMetas((lista) =>
             lista.map((item, itemIndex) =>
                 itemIndex === index ? { ...item, [campo]: valor } : item
@@ -138,6 +143,7 @@ export default function MetasMensaisCard() {
                                 <td>
                                     <CampoMoeda
                                         valor={meta.meta_mensal}
+                                        desabilitado={somenteLeitura}
                                         onChange={(valor) =>
                                             atualizarMeta(index, "meta_mensal", valor)
                                         }
@@ -153,6 +159,7 @@ export default function MetasMensaisCard() {
                                                 : "metas-dia"
                                         }
                                         aria-pressed={meta.abre_sabado === 1}
+                                        disabled={somenteLeitura}
                                         onClick={() =>
                                             atualizarMeta(
                                                 index,
@@ -171,6 +178,7 @@ export default function MetasMensaisCard() {
                                                 : "metas-dia"
                                         }
                                         aria-pressed={meta.abre_domingo === 1}
+                                        disabled={somenteLeitura}
                                         onClick={() =>
                                             atualizarMeta(
                                                 index,
@@ -186,6 +194,7 @@ export default function MetasMensaisCard() {
                                 <td>
                                     <CampoInteiro
                                         valor={meta.feriados}
+                                        desabilitado={somenteLeitura}
                                         onChange={(valor) =>
                                             atualizarMeta(index, "feriados", valor)
                                         }
@@ -217,7 +226,11 @@ export default function MetasMensaisCard() {
             </div>
 
             <div className="metas-salvar">
-                <button type="button" onClick={() => void salvar()} disabled={salvando}>
+                <button
+                    type="button"
+                    onClick={() => void salvar()}
+                    disabled={salvando || somenteLeitura}
+                >
                     💾 Salvar Alterações
                 </button>
             </div>
