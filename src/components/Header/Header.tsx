@@ -2,7 +2,7 @@ import "./Header.css";
 
 import { useEffect, useMemo, useState } from "react";
 import { PDFDownloadLink } from "@react-pdf/renderer";
-import { FaUsers, FaBullseye, FaSignOutAlt, FaChartBar } from "react-icons/fa";
+import { FaUsers, FaBullseye, FaSignOutAlt, FaChartBar, FaBalanceScale } from "react-icons/fa";
 
 import ReportDocument from "./ReportDocument";
 import SeletorData from "./SeletorData";
@@ -10,12 +10,13 @@ import SeletorPainel from "../../pages/Metas/SeletorPainel";
 import { nomeLojaExibicao } from "../../models/nomeLoja";
 import type { OpcaoFiltro, Resumo, UsuarioSessao } from "../../models/types";
 
-export type SecaoPainel = "dashboard" | "usuarios" | "metas";
+export type SecaoPainel = "dashboard" | "usuarios" | "metas" | "comparativo";
 
 const DESTINOS: Record<SecaoPainel, SecaoPainel[]> = {
-    dashboard: ["usuarios", "metas"],
-    usuarios: ["dashboard", "metas"],
-    metas: ["usuarios", "dashboard"]
+    dashboard: ["usuarios", "metas", "comparativo"],
+    usuarios: ["dashboard", "metas", "comparativo"],
+    metas: ["usuarios", "dashboard", "comparativo"],
+    comparativo: ["usuarios", "metas", "dashboard"]
 };
 
 type HeaderProps = {
@@ -225,6 +226,12 @@ export default function Header({
                                     <>
                                         <FaBullseye />
                                         &nbsp;Controle de Metas
+                                    </>
+                                )}
+                                {destino === "comparativo" && (
+                                    <>
+                                        <FaBalanceScale />
+                                        &nbsp;Comparativo
                                     </>
                                 )}
                             </button>

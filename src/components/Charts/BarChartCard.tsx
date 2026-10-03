@@ -5,11 +5,13 @@ import {
     XAxis,
     YAxis,
     CartesianGrid,
-    Tooltip
+    Tooltip,
+    Legend
 } from "recharts";
 
 import { useEffect, useRef } from "react";
 import "./Chart.css";
+import type { SerieGrafico } from "../../models/types";
 
 type LinhaGrafico = {
     percentual?: number;
@@ -23,6 +25,7 @@ type BarChartCardProps = {
     eixo: string;
     valor: string;
     horizontal?: boolean;
+    series?: readonly SerieGrafico[];
     onSnapshot?: (imagem: string) => void;
 };
 
@@ -32,13 +35,18 @@ export default function BarChartCard({
     eixo,
     valor,
     horizontal = false,
+    series,
     onSnapshot
 }: BarChartCardProps) {
     const mobile = window.innerWidth <= 768;
     const chartRef = useRef<HTMLDivElement>(null);
 
-    function formatarValor(v: string | number | undefined) {
-        if (valor === "faturamento" || valor === "ticket_medio") {
+    function formatarValor(v: string | number | undefined, chave = valor) {
+        if (
+            chave === "faturamento" ||
+            chave === "ticket_medio" ||
+            chave.startsWith("faturamento")
+        ) {
             return Number(v).toLocaleString("pt-BR", {
                 style: "currency",
                 currency: "BRL"
@@ -131,6 +139,42 @@ export default function BarChartCard({
 
                                 const item = payload[0].payload as LinhaGrafico;
 
+                                if (series) {
+                                    return (
+                                        <div
+                                            style={{
+                                                background: "#fff",
+                                                border: "1px solid #ddd",
+                                                borderRadius: "8px",
+                                                padding: "12px",
+                                                boxShadow: "0 4px 12px rgba(0,0,0,.15)"
+                                            }}
+                                        >
+                                            <div
+                                                style={{
+                                                    fontWeight: "bold",
+                                                    fontSize: "15px",
+                                                    marginBottom: "10px"
+                                                }}
+                                            >
+                                                {label}
+                                            </div>
+                                            {payload.map((entrada) => (
+                                                <div
+                                                    key={String(entrada.dataKey)}
+                                                    style={{ marginBottom: "6px" }}
+                                                >
+                                                    <strong>{entrada.name}:</strong>{" "}
+                                                    {formatarValor(
+                                                        entrada.value as string | number | undefined,
+                                                        String(entrada.dataKey)
+                                                    )}
+                                                </div>
+                                            ))}
+                                        </div>
+                                    );
+                                }
+
                                 return (
                                     <div
                                         style={{
@@ -171,12 +215,26 @@ export default function BarChartCard({
                             }}
                         />
 
-                        <Bar
-                            dataKey={valor}
-                            fill="#197602"
-                            radius={[6, 6, 6, 6]}
-                            barSize={mobile ? 16 : 24}
-                        />
+                        {series && <Legend />}
+                        {series ? (
+                            series.map((serie) => (
+                                <Bar
+                                    key={serie.chave}
+                                    dataKey={serie.chave}
+                                    name={serie.nome}
+                                    fill={serie.cor}
+                                    radius={[6, 6, 6, 6]}
+                                    barSize={mobile ? 12 : 16}
+                                />
+                            ))
+                        ) : (
+                            <Bar
+                                dataKey={valor}
+                                fill="#197602"
+                                radius={[6, 6, 6, 6]}
+                                barSize={mobile ? 16 : 24}
+                            />
+                        )}
                     </BarChart>
                 </ResponsiveContainer>
             </div>

@@ -214,3 +214,69 @@ export type MetaVendedorForm = {
 export type ErroApi = {
     erro?: string;
 };
+
+export type MetricasPeriodo = {
+    faturamento: number;
+    quantidade: number;
+    pedidos: number;
+    ticket_medio: number;
+};
+
+export type PercentualDesvio = {
+    faturamento: number | null;
+    quantidade: number | null;
+    pedidos: number | null;
+    ticket_medio: number | null;
+};
+
+export type Desvio = {
+    vigente: MetricasPeriodo;
+    anterior: MetricasPeriodo;
+    percentual: PercentualDesvio;
+};
+
+export type DesvioHora = Desvio & {
+    hora: number;
+};
+
+export type DesvioLoja = Desvio & {
+    loja: string;
+};
+
+export type DesvioSecao = Desvio & {
+    codigo_secao: number;
+    nome_secao: string;
+};
+
+export type DesvioFornecedor = Desvio & {
+    codigo_fornecedor: number;
+    nome_fornecedor: string;
+};
+
+export type DesvioProduto = Desvio & {
+    codigo_produto: number;
+    nome_produto: string;
+};
+
+export type Comparativo = {
+    sucesso: boolean;
+    modo: "dia" | "acumulado";
+    periodo: {
+        vigente: { inicio: string; fim: string };
+        anterior: { inicio: string; fim: string };
+    };
+    desvios: {
+        total: Desvio;
+        por_loja: DesvioLoja[];
+        por_hora: DesvioHora[];
+        por_secao: DesvioSecao[];
+        por_fornecedor: DesvioFornecedor[];
+        por_produto: DesvioProduto[];
+    };
+};
+
+export type SerieGrafico = {
+    chave: string;
+    nome: string;
+    cor: string;
+};

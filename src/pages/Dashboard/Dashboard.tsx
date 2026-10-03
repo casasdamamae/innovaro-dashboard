@@ -13,6 +13,7 @@ import BarChartCard from "../../components/Charts/BarChartCard";
 import RankingCard from "../../components/RankingCard/RankingCard";
 import Usuarios from "../Usuarios/Usuarios";
 import ControleMetas from "../Metas/ControleMetas";
+import Comparativo from "../Comparativo/Comparativo";
 
 import {
     FaMoneyBillWave,
@@ -179,6 +180,7 @@ export default function Dashboard() {
     } = useDashboard();
 
     const [secao, setSecao] = useState<SecaoPainel>("dashboard");
+    const [versaoComparativo, setVersaoComparativo] = useState(0);
 
     return (
         <>
@@ -199,7 +201,10 @@ export default function Dashboard() {
                 onLojaChange={setLoja}
                 onFornecedorChange={setFornecedor}
                 onSetorChange={setSetor}
-                onRefresh={atualizar}
+                onRefresh={() => {
+                    void atualizar();
+                    setVersaoComparativo((atual) => atual + 1);
+                }}
                 secao={secao}
                 onSelecionarSecao={setSecao}
                 onLogout={encerrarSessao}
@@ -211,6 +216,13 @@ export default function Dashboard() {
                     <Usuarios />
                 ) : secao === "metas" ? (
                     <ControleMetas />
+                ) : secao === "comparativo" ? (
+                    <Comparativo
+                        inicio={inicio}
+                        fim={fim}
+                        loja={loja}
+                        versao={versaoComparativo}
+                    />
                 ) : isInitialLoading ? (
                     <h2>Carregando dashboard...</h2>
                 ) : erroInicial || !dados ? (
