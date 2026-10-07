@@ -1,5 +1,9 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
+import { useOutletContext } from "react-router-dom";
+
+import { useDashboard } from "../../context/dashboardContext";
+import type { ContextoPainel } from "../Painel/PainelLayout";
 
 import HoraChart from "../../components/Charts/HoraChart";
 import BarChartCard from "../../components/Charts/BarChartCard";
@@ -16,11 +20,6 @@ import type { Comparativo, Desvio, SerieGrafico } from "../../models/types";
 const COR_ANTERIOR = "#CF0C0C";
 const COR_VIGENTE = "#197602";
 const TOPO = 15;
-
-type ComparativoProps = {
-    loja: string;
-    versao: number;
-};
 
 function anoDe(iso: string) {
     return iso.slice(0, 4);
@@ -66,7 +65,9 @@ function topDoAno<T extends Desvio>(
         }));
 }
 
-export default function Comparativo({ loja, versao }: ComparativoProps) {
+export default function Comparativo() {
+    const { loja } = useDashboard();
+    const { versaoComparativo } = useOutletContext<ContextoPainel>();
     const [modo, setModo] = useState<ModoComparativo>("dia");
     const [dados, setDados] = useState<Comparativo | null>(null);
     const [carregando, setCarregando] = useState(true);
@@ -95,16 +96,29 @@ export default function Comparativo({ loja, versao }: ComparativoProps) {
         return () => {
             ativo = false;
         };
-    }, [modo, loja, versao]);
+    }, [modo, loja, versaoComparativo]);
 
-    function alternarModo() {
-        setModo((atual) => (atual === "dia" ? "acumulado" : "dia"));
+    function escolherModo(proximo: ModoComparativo) {
+        setModo((atual) => (atual === proximo ? atual : proximo));
     }
 
     const botaoModo = (
-        <div className="comparativo-modo">
-            <button type="button" onClick={alternarModo}>
-                {modo === "dia" ? "Acumulado do Mês" : "Hoje"}
+        <div className="comparativo-modo" role="group" aria-label="Período do comparativo">
+            <button
+                type="button"
+                className={modo === "dia" ? "pressionado" : undefined}
+                aria-pressed={modo === "dia"}
+                onClick={() => escolherModo("dia")}
+            >
+                Hoje
+            </button>
+            <button
+                type="button"
+                className={modo === "acumulado" ? "pressionado" : undefined}
+                aria-pressed={modo === "acumulado"}
+                onClick={() => escolherModo("acumulado")}
+            >
+                Acumulado do Mês
             </button>
         </div>
     );

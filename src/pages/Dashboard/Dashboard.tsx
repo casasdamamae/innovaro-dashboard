@@ -1,19 +1,14 @@
 import "./Dashboard.css";
 
-import { useState, type ReactNode } from "react";
+import type { ReactNode } from "react";
 import { useDashboard } from "../../context/dashboardContext";
-import { encerrarSessao } from "../../models/session";
 import type { Resumo } from "../../models/types";
 
-import Header, { type SecaoPainel } from "../../components/Header/Header";
 import Card from "../../components/Card/Card";
 import MetaCard from "../../components/MetaCard/MetaCard";
 import HoraChart from "../../components/Charts/HoraChart";
 import BarChartCard from "../../components/Charts/BarChartCard";
 import RankingCard from "../../components/RankingCard/RankingCard";
-import Usuarios from "../Usuarios/Usuarios";
-import ControleMetas from "../Metas/ControleMetas";
-import Comparativo from "../Comparativo/Comparativo";
 
 import {
     FaMoneyBillWave,
@@ -155,85 +150,23 @@ function DashboardConteudo({ dados, onSnapshotLoja }: DashboardConteudoProps) {
 }
 
 export default function Dashboard() {
-    const {
-        dados,
-        isInitialLoading,
-        isRefreshing,
-        erroInicial,
-        usuario,
-        inicio,
-        fim,
-        loja,
-        lojas,
-        fornecedor,
-        fornecedores,
-        setor,
-        setores,
-        graficoLoja,
-        setInicio,
-        setFim,
-        setLoja,
-        setFornecedor,
-        setSetor,
-        atualizar,
-        registrarGraficoLoja
-    } = useDashboard();
+    const { dados, isInitialLoading, erroInicial, atualizar, registrarGraficoLoja } =
+        useDashboard();
 
-    const [secao, setSecao] = useState<SecaoPainel>("dashboard");
-    const [versaoComparativo, setVersaoComparativo] = useState(0);
+    if (isInitialLoading) {
+        return <h2>Carregando dashboard...</h2>;
+    }
 
-    return (
-        <>
-            <Header
-                usuario={usuario}
-                dados={dados}
-                inicio={inicio}
-                fim={fim}
-                loja={loja}
-                lojas={lojas}
-                fornecedor={fornecedor}
-                fornecedores={fornecedores}
-                setor={setor}
-                setores={setores}
-                isRefreshing={isRefreshing}
-                onInicioChange={setInicio}
-                onFimChange={setFim}
-                onLojaChange={setLoja}
-                onFornecedorChange={setFornecedor}
-                onSetorChange={setSetor}
-                onRefresh={() => {
-                    void atualizar();
-                    setVersaoComparativo((atual) => atual + 1);
-                }}
-                secao={secao}
-                onSelecionarSecao={setSecao}
-                onLogout={encerrarSessao}
-                graficoLoja={graficoLoja}
-            />
+    if (erroInicial || !dados) {
+        return (
+            <div className="dashboard-estado">
+                <h2>Não foi possível carregar o dashboard.</h2>
+                <button type="button" onClick={() => void atualizar()}>
+                    Tentar novamente
+                </button>
+            </div>
+        );
+    }
 
-            <main className="dashboard">
-                {secao === "usuarios" ? (
-                    <Usuarios />
-                ) : secao === "metas" ? (
-                    <ControleMetas />
-                ) : secao === "comparativo" ? (
-                    <Comparativo loja={loja} versao={versaoComparativo} />
-                ) : isInitialLoading ? (
-                    <h2>Carregando dashboard...</h2>
-                ) : erroInicial || !dados ? (
-                    <div className="dashboard-estado">
-                        <h2>Não foi possível carregar o dashboard.</h2>
-                        <button type="button" onClick={() => void atualizar()}>
-                            Tentar novamente
-                        </button>
-                    </div>
-                ) : (
-                    <DashboardConteudo
-                        dados={dados}
-                        onSnapshotLoja={registrarGraficoLoja}
-                    />
-                )}
-            </main>
-        </>
-    );
+    return <DashboardConteudo dados={dados} onSnapshotLoja={registrarGraficoLoja} />;
 }

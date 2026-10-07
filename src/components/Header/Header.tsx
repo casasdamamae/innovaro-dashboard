@@ -1,89 +1,49 @@
 import "./Header.css";
 
 import { useEffect, useMemo, useState } from "react";
+import { NavLink, useLocation } from "react-router-dom";
 import { PDFDownloadLink } from "@react-pdf/renderer";
-import { FaUsers, FaBullseye, FaSignOutAlt, FaChartBar, FaBalanceScale } from "react-icons/fa";
 
 import ReportDocument from "./ReportDocument";
-import SeletorData from "./SeletorData";
-import SeletorPainel from "../../pages/Metas/SeletorPainel";
-import { nomeLojaExibicao } from "../../models/nomeLoja";
-import type { OpcaoFiltro, Resumo, UsuarioSessao } from "../../models/types";
+import { useDashboard } from "../../context/dashboardContext";
 
-export type SecaoPainel = "dashboard" | "usuarios" | "metas" | "comparativo";
-
-const DESTINOS: Record<SecaoPainel, SecaoPainel[]> = {
-    dashboard: ["usuarios", "metas", "comparativo"],
-    usuarios: ["dashboard", "metas", "comparativo"],
-    metas: ["usuarios", "dashboard", "comparativo"],
-    comparativo: ["usuarios", "metas", "dashboard"]
-};
+const LINKS = [
+    { to: "/dashboard", rotulo: "Dashboard" },
+    { to: "/usuarios", rotulo: "Administração de Usuários" },
+    { to: "/metas", rotulo: "Controle de Metas" },
+    { to: "/comparativo", rotulo: "Comparativo" }
+];
 
 type HeaderProps = {
-    usuario: UsuarioSessao | null;
-    dados: Resumo | null;
-    graficoLoja: string | null;
-    inicio: string;
-    fim: string;
-    loja: string;
-    lojas: OpcaoFiltro[];
-    fornecedor: string;
-    fornecedores: OpcaoFiltro[];
-    setor: string;
-    setores: OpcaoFiltro[];
-    onInicioChange: (valor: string) => void;
-    onFimChange: (valor: string) => void;
-    onLojaChange: (valor: string) => void;
-    onFornecedorChange: (valor: string) => void;
-    onSetorChange: (valor: string) => void;
-    isRefreshing?: boolean;
     onRefresh: () => void;
-    secao: SecaoPainel;
-    onSelecionarSecao: (secao: SecaoPainel) => void;
     onLogout: () => void;
 };
 
-export default function Header({
-    usuario,
-    dados,
-    graficoLoja,
-    inicio,
-    fim,
-    loja,
-    lojas,
-    fornecedor,
-    fornecedores,
-    setor,
-    setores,
-    onInicioChange,
-    onFimChange,
-    onLojaChange,
-    onFornecedorChange,
-    onSetorChange,
-    isRefreshing = false,
-    onRefresh,
-    secao,
-    onSelecionarSecao,
-    onLogout
-}: HeaderProps) {
-    const [horaAtual, setHoraAtual] = useState(
-        new Date().toLocaleTimeString("pt-BR")
-    );
-
-    useEffect(() => {
-        const intervalo = setInterval(() => {
-            setHoraAtual(new Date().toLocaleTimeString("pt-BR"));
-        }, 1000);
-
-        return () => clearInterval(intervalo);
-    }, []);
-
+export default function Header({ onRefresh, onLogout }: HeaderProps) {
+    const { usuario, dados, graficoLoja, isRefreshing } = useDashboard();
+    const { pathname } = useLocation();
+    const [menuAberto, setMenuAberto] = useState(false);
     const ehAdmin = usuario?.nivel === "ADMIN";
 
     const pdfDocument = useMemo(
         () => <ReportDocument dados={dados} graficoLoja={graficoLoja} />,
         [dados, graficoLoja]
     );
+
+    useEffect(() => {
+        setMenuAberto(false);
+    }, [pathname]);
+
+    useEffect(() => {
+        if (!menuAberto) return undefined;
+
+        function fecharNoEsc(evento: KeyboardEvent) {
+            if (evento.key === "Escape") setMenuAberto(false);
+        }
+
+        document.addEventListener("keydown", fecharNoEsc);
+        return () => document.removeEventListener("keydown", fecharNoEsc);
+    }, [menuAberto]);
 
     function telaCheia() {
         if (!document.fullscreenElement) {
@@ -94,169 +54,83 @@ export default function Header({
     }
 
     return (
-        <header className="header">
-            <div className="header-top">
-                <div className="logo">
-                    <img
-                        src="/logo-casas.png"
-                        alt="Casas da Mamãe"
-                        className="logo-casas"
-                    />
+        <header className="navbar">
+            <div className="navbar-container">
+                <NavLink to="/dashboard" className="navbar-logos" aria-label="Ir para o dashboard">
+                    <img src="/logo-casas.png" alt="Casas da Mamãe" />
+                    <img src="/logo-melhor.png" alt="Melhor das Casas" />
+                </NavLink>
 
-                    <div className="divisor"></div>
+                <button
+                    type="button"
+                    className="navbar-hamburguer"
+                    aria-label={menuAberto ? "Fechar menu" : "Abrir menu"}
+                    aria-expanded={menuAberto}
+                    aria-controls="menu-principal"
+                    onClick={() => setMenuAberto((atual) => !atual)}
+                >
+                    <span />
+                    <span />
+                    <span />
+                </button>
 
-                    <img
-                        src="/logo-melhor.png"
-                        alt="Melhor das Casas"
-                        className="logo-melhor"
-                    />
-                </div>
-
-                <div className="header-info">
-                    <span>👤 {usuario?.usuario || "Admin"}</span>
-                    <strong>{horaAtual}</strong>
-                    {isRefreshing && (
-                        <span className="header-atualizando">Atualizando…</span>
+                <div
+                    id="menu-principal"
+                    className={menuAberto ? "navbar-painel aberto" : "navbar-painel"}
+                >
+                    {ehAdmin && (
+                        <nav aria-label="Seções">
+                            <ul className="navbar-menu">
+                                {LINKS.map((link) => (
+                                    <li key={link.to}>
+                                        <NavLink
+                                            to={link.to}
+                                            className={({ isActive }) =>
+                                                isActive ? "navbar-link ativo" : "navbar-link"
+                                            }
+                                        >
+                                            {link.rotulo}
+                                        </NavLink>
+                                    </li>
+                                ))}
+                            </ul>
+                        </nav>
                     )}
-                </div>
-            </div>
 
-            <div className="header-filtros">
-                <div className="campo">
-                    <label htmlFor="filtro-inicio">Data Inicial</label>
-                    <SeletorData
-                        id="filtro-inicio"
-                        valor={inicio}
-                        ariaLabel="Data Inicial"
-                        onChange={onInicioChange}
-                    />
-                </div>
-
-                <div className="campo">
-                    <label htmlFor="filtro-fim">Data Final</label>
-                    <SeletorData
-                        id="filtro-fim"
-                        valor={fim}
-                        ariaLabel="Data Final"
-                        onChange={onFimChange}
-                    />
-                </div>
-
-                <div className="campo">
-                    <label htmlFor="filtro-loja">Loja</label>
-                    <SeletorPainel
-                        id="filtro-loja"
-                        rotulo={nomeLojaExibicao(
-                            lojas.find((item) => item.id === loja)?.nome ?? ""
-                        )}
-                        ariaLabel="Loja"
-                        layout="lista"
-                        compacto
-                        larguraCheia
-                        selecionado={loja}
-                        onChange={onLojaChange}
-                        opcoes={lojas.map((item) => ({
-                            id: item.id,
-                            rotulo: nomeLojaExibicao(item.nome)
-                        }))}
-                    />
-                </div>
-
-                <div className="campo">
-                    <label htmlFor="filtro-fornecedor">Fornecedor</label>
-                    <SeletorPainel
-                        id="filtro-fornecedor"
-                        rotulo={
-                            fornecedores.find((item) => item.id === fornecedor)?.nome ?? ""
-                        }
-                        ariaLabel="Fornecedor"
-                        layout="lista"
-                        compacto
-                        larguraCheia
-                        selecionado={fornecedor}
-                        onChange={onFornecedorChange}
-                        opcoes={fornecedores.map((item) => ({
-                            id: item.id,
-                            rotulo: item.nome
-                        }))}
-                    />
-                </div>
-
-                <div className="campo">
-                    <label htmlFor="filtro-setor">Setor</label>
-                    <SeletorPainel
-                        id="filtro-setor"
-                        rotulo={setores.find((item) => item.id === setor)?.nome ?? ""}
-                        ariaLabel="Setor"
-                        layout="lista"
-                        compacto
-                        larguraCheia
-                        selecionado={setor}
-                        onChange={onSetorChange}
-                        opcoes={setores.map((item) => ({
-                            id: item.id,
-                            rotulo: item.nome
-                        }))}
-                    />
-                </div>
-
-                <div className="botoes-header">
-                    <button onClick={onRefresh}>🔄 Atualizar</button>
-
-                    {ehAdmin &&
-                        DESTINOS[secao].map((destino) => (
-                            <button
-                                key={destino}
-                                type="button"
-                                onClick={() => onSelecionarSecao(destino)}
-                            >
-                                {destino === "dashboard" && (
-                                    <>
-                                        <FaChartBar />
-                                        &nbsp;Dashboard
-                                    </>
-                                )}
-                                {destino === "usuarios" && (
-                                    <>
-                                        <FaUsers />
-                                        &nbsp;Administração de Usuários
-                                    </>
-                                )}
-                                {destino === "metas" && (
-                                    <>
-                                        <FaBullseye />
-                                        &nbsp;Controle de Metas
-                                    </>
-                                )}
-                                {destino === "comparativo" && (
-                                    <>
-                                        <FaBalanceScale />
-                                        &nbsp;Comparativo
-                                    </>
-                                )}
-                            </button>
-                        ))}
-
-                    {dados && (
-                        <PDFDownloadLink
-                            document={pdfDocument}
-                            fileName={`RELATÓRIO - ${new Date().toLocaleDateString("pt-BR")}.pdf`}
+                    <div className="navbar-acoes">
+                        <button
+                            type="button"
+                            className="navbar-acao"
+                            onClick={onRefresh}
+                            disabled={isRefreshing}
                         >
-                            {({ loading }) => (
-                                <button className="btn-pdf">
-                                    {loading ? "Gerando PDF..." : "📄 Exportar PDF"}
-                                </button>
-                            )}
-                        </PDFDownloadLink>
-                    )}
+                            {isRefreshing ? "Atualizando…" : "Atualizar"}
+                        </button>
 
-                    <button className="btn-fullscreen" onClick={telaCheia}>
-                        📺 Tela Cheia
-                    </button>
+                        {dados ? (
+                            <PDFDownloadLink
+                                document={pdfDocument}
+                                fileName={`RELATÓRIO - ${new Date().toLocaleDateString("pt-BR")}.pdf`}
+                            >
+                                {({ loading }) => (
+                                    <button type="button" className="navbar-acao">
+                                        {loading ? "Gerando PDF..." : "Exportar PDF"}
+                                    </button>
+                                )}
+                            </PDFDownloadLink>
+                        ) : (
+                            <button type="button" className="navbar-acao" disabled>
+                                Exportar PDF
+                            </button>
+                        )}
 
-                    <button onClick={onLogout}>
-                        <FaSignOutAlt />
-                        &nbsp;Sair
+                        <button type="button" className="navbar-acao" onClick={telaCheia}>
+                            Tela Cheia
+                        </button>
+                    </div>
+
+                    <button type="button" className="navbar-sair" onClick={onLogout}>
+                        SAIR
                     </button>
                 </div>
             </div>

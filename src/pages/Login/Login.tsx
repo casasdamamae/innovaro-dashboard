@@ -1,13 +1,20 @@
 import { useState } from "react";
 import type { FormEvent } from "react";
+import { Navigate, useNavigate } from "react-router-dom";
 import { useAuthController } from "../../controllers/useAuthController";
+import { hasSession } from "../../models/session";
 import "./Login.css";
 
 export default function Login() {
     const [usuario, setUsuario] = useState("");
     const [senha, setSenha] = useState("");
 
+    const navigate = useNavigate();
     const { entrar, erro, loading } = useAuthController();
+
+    if (hasSession()) {
+        return <Navigate to="/dashboard" replace />;
+    }
 
     async function handleSubmit(e: FormEvent<HTMLFormElement>) {
         e.preventDefault();
@@ -18,7 +25,7 @@ export default function Login() {
         });
 
         if (autenticado) {
-            window.location.reload();
+            navigate("/dashboard", { replace: true });
         }
     }
 

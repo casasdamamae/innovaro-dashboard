@@ -1,0 +1,48 @@
+.filtros {
+    display: flex;
+    align-items: flex-end;
+    flex-wrap: wrap;
+    gap: 20px;
+    padding: 20px 25px 0;
+}
+
+.filtros .campo {
+    display: flex;
+    flex-direction: column;
+}
+
+.filtros .campo label {
+    margin-bottom: 6px;
+    color: #1a3358;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.filtros .campo .metas-mes,
+.filtros .campo .seletor-data {
+    width: 180px;
+    margin-bottom: 0;
+}
+
+.filtros .campo .metas-mes-bloco .metas-mes-painel {
+    left: 0;
+    width: max-content;
+    min-width: 100%;
+    max-width: min(360px, 80vw);
+    transform: none;
+}
+
+@media (max-width: 768px) {
+    .filtros {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 12px;
+        padding: 15px 15px 0;
+    }
+
+    .filtros .campo,
+    .filtros .campo .metas-mes,
+    .filtros .campo .seletor-data {
+        width: 100%;
+    }
+}
