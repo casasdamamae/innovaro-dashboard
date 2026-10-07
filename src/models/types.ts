@@ -243,6 +243,11 @@ export type DesvioLoja = Desvio & {
     loja: string;
 };
 
+export type DesvioSubgrupo = Desvio & {
+    codigo_subgrupo: number;
+    nome_subgrupo: string;
+};
+
 export type DesvioSecao = Desvio & {
     codigo_secao: number;
     nome_secao: string;
@@ -269,6 +274,7 @@ export type Comparativo = {
         total: Desvio;
         por_loja: DesvioLoja[];
         por_hora: DesvioHora[];
+        por_subgrupo: DesvioSubgrupo[];
         por_secao: DesvioSecao[];
         por_fornecedor: DesvioFornecedor[];
         por_produto: DesvioProduto[];

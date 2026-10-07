@@ -217,12 +217,7 @@ export default function Dashboard() {
                 ) : secao === "metas" ? (
                     <ControleMetas />
                 ) : secao === "comparativo" ? (
-                    <Comparativo
-                        inicio={inicio}
-                        fim={fim}
-                        loja={loja}
-                        versao={versaoComparativo}
-                    />
+                    <Comparativo loja={loja} versao={versaoComparativo} />
                 ) : isInitialLoading ? (
                     <h2>Carregando dashboard...</h2>
                 ) : erroInicial || !dados ? (

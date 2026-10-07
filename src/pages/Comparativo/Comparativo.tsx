@@ -4,7 +4,13 @@ import axios from "axios";
 import HoraChart from "../../components/Charts/HoraChart";
 import BarChartCard from "../../components/Charts/BarChartCard";
 import CardTotais from "./CardTotais";
-import { fetchComparativo } from "../../services/comparativoService";
+import ListaQuantidade from "./ListaQuantidade";
+import { nomeLojaExibicao } from "../../models/nomeLoja";
+import "./Comparativo.css";
+import {
+    fetchComparativo,
+    type ModoComparativo
+} from "../../services/comparativoService";
 import type { Comparativo, Desvio, SerieGrafico } from "../../models/types";
 
 const COR_ANTERIOR = "#CF0C0C";
@@ -12,8 +18,6 @@ const COR_VIGENTE = "#197602";
 const TOPO = 15;
 
 type ComparativoProps = {
-    inicio: string;
-    fim: string;
     loja: string;
     versao: number;
 };
@@ -47,7 +51,23 @@ function pontoFaturamento(nome: string, desvio: Desvio) {
     };
 }
 
-export default function Comparativo({ inicio, fim, loja, versao }: ComparativoProps) {
+function topDoAno<T extends Desvio>(
+    itens: readonly T[],
+    lado: "anterior" | "vigente",
+    nomeDe: (item: T) => string
+) {
+    return itens
+        .filter((item) => item[lado].faturamento > 0)
+        .sort((a, b) => b[lado].faturamento - a[lado].faturamento)
+        .slice(0, TOPO)
+        .map((item) => ({
+            nome: nomeDe(item),
+            faturamento: item[lado].faturamento
+        }));
+}
+
+export default function Comparativo({ loja, versao }: ComparativoProps) {
+    const [modo, setModo] = useState<ModoComparativo>("dia");
     const [dados, setDados] = useState<Comparativo | null>(null);
     const [carregando, setCarregando] = useState(true);
     const [erro, setErro] = useState("");
@@ -58,7 +78,7 @@ export default function Comparativo({ inicio, fim, loja, versao }: ComparativoPr
         setCarregando(true);
         setErro("");
 
-        fetchComparativo({ inicio, fim, loja })
+        fetchComparativo({ modo, loja })
             .then((resposta) => {
                 if (!ativo) return;
                 setDados(resposta);
@@ -75,17 +95,37 @@ export default function Comparativo({ inicio, fim, loja, versao }: ComparativoPr
         return () => {
             ativo = false;
         };
-    }, [inicio, fim, loja, versao]);
+    }, [modo, loja, versao]);
+
+    function alternarModo() {
+        setModo((atual) => (atual === "dia" ? "acumulado" : "dia"));
+    }
+
+    const botaoModo = (
+        <div className="comparativo-modo">
+            <button type="button" onClick={alternarModo}>
+                {modo === "dia" ? "Acumulado do Mês" : "Hoje"}
+            </button>
+        </div>
+    );
 
     if (carregando && !dados) {
-        return <h2>Carregando comparativo...</h2>;
+        return (
+            <>
+                {botaoModo}
+                <h2>Carregando comparativo...</h2>
+            </>
+        );
     }
 
     if (erro || !dados) {
         return (
-            <div className="dashboard-estado">
-                <h2>{erro || "Não foi possível carregar o comparativo."}</h2>
-            </div>
+            <>
+                {botaoModo}
+                <div className="dashboard-estado">
+                    <h2>{erro || "Não foi possível carregar o comparativo."}</h2>
+                </div>
+            </>
         );
     }
 
@@ -96,6 +136,8 @@ export default function Comparativo({ inicio, fim, loja, versao }: ComparativoPr
 
     return (
         <>
+            {botaoModo}
+
             <CardTotais
                 anoAnterior={anoAnterior}
                 anoVigente={anoVigente}
@@ -111,49 +153,64 @@ export default function Comparativo({ inicio, fim, loja, versao }: ComparativoPr
                 series={series}
             />
 
-            <div className="grid-charts">
-                <BarChartCard
-                    titulo="🏪 Faturamento por Loja"
-                    dados={desvios.por_loja.map((item) => pontoFaturamento(item.loja, item))}
-                    eixo="nome"
-                    valor="faturamento"
-                    horizontal
-                    series={series}
-                />
+            <BarChartCard
+                titulo="🏪 Faturamento por Loja"
+                dados={desvios.por_loja.map((item) =>
+                    pontoFaturamento(nomeLojaExibicao(item.loja), item)
+                )}
+                eixo="nome"
+                valor="faturamento"
+                altura={350}
+                series={series}
+            />
 
-                <BarChartCard
+            <div className="grid-charts">
+                <ListaQuantidade
                     titulo="📦 Top 15 Setores"
-                    dados={desvios.por_secao
-                        .slice(0, TOPO)
-                        .map((item) => pontoFaturamento(item.nome_secao, item))}
-                    eixo="nome"
-                    valor="faturamento"
-                    horizontal
-                    series={series}
+                    anoAnterior={anoAnterior}
+                    anoVigente={anoVigente}
+                    anteriores={topDoAno(
+                        desvios.por_subgrupo,
+                        "anterior",
+                        (item) => item.nome_subgrupo
+                    )}
+                    vigentes={topDoAno(
+                        desvios.por_subgrupo,
+                        "vigente",
+                        (item) => item.nome_subgrupo
+                    )}
                 />
-            </div>
 
-            <div className="grid-charts">
-                <BarChartCard
+                <ListaQuantidade
                     titulo="🏭 Top 15 Fornecedores"
-                    dados={desvios.por_fornecedor
-                        .slice(0, TOPO)
-                        .map((item) => pontoFaturamento(item.nome_fornecedor, item))}
-                    eixo="nome"
-                    valor="faturamento"
-                    horizontal
-                    series={series}
+                    anoAnterior={anoAnterior}
+                    anoVigente={anoVigente}
+                    anteriores={topDoAno(
+                        desvios.por_fornecedor,
+                        "anterior",
+                        (item) => item.nome_fornecedor
+                    )}
+                    vigentes={topDoAno(
+                        desvios.por_fornecedor,
+                        "vigente",
+                        (item) => item.nome_fornecedor
+                    )}
                 />
 
-                <BarChartCard
+                <ListaQuantidade
                     titulo="💰 Top 15 Produtos"
-                    dados={desvios.por_produto
-                        .slice(0, TOPO)
-                        .map((item) => pontoFaturamento(item.nome_produto, item))}
-                    eixo="nome"
-                    valor="faturamento"
-                    horizontal
-                    series={series}
+                    anoAnterior={anoAnterior}
+                    anoVigente={anoVigente}
+                    anteriores={topDoAno(
+                        desvios.por_produto,
+                        "anterior",
+                        (item) => item.nome_produto
+                    )}
+                    vigentes={topDoAno(
+                        desvios.por_produto,
+                        "vigente",
+                        (item) => item.nome_produto
+                    )}
                 />
             </div>
         </>

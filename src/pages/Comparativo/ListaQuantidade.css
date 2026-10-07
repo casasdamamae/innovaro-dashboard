@@ -1,0 +1,143 @@
+.lista-quantidade {
+    background: #fff;
+    border-radius: 14px;
+    padding: 20px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.lista-quantidade h3 {
+    margin: 0 0 20px;
+    color: #1565c0;
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.lista-quantidade-colunas {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+}
+
+.lista-quantidade-ano {
+    padding: 0 8px 10px;
+    font-size: 14px;
+    font-weight: 700;
+    text-align: right;
+}
+
+.lista-quantidade-ano-anterior,
+.lista-quantidade-ano-anterior .lista-quantidade-ano,
+.lista-quantidade-ano-anterior .lista-quantidade-valor {
+    color: #cf0c0c;
+}
+
+.lista-quantidade-ano-vigente,
+.lista-quantidade-ano-vigente .lista-quantidade-ano,
+.lista-quantidade-ano-vigente .lista-quantidade-valor {
+    color: #197602;
+}
+
+.lista-quantidade-rolagem {
+    overflow-y: auto;
+    max-height: 360px;
+    padding-right: 5px;
+}
+
+.lista-quantidade-item {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 10px;
+    align-items: center;
+    padding: 12px 8px;
+    border-bottom: 1px solid #eee;
+}
+
+.lista-quantidade-item:hover {
+    background: #f5f7fb;
+}
+
+.lista-quantidade-nome {
+    min-width: 0;
+    font-size: 15px;
+    font-weight: 600;
+    color: #333;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.lista-quantidade-valor {
+    text-align: right;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.lista-quantidade-rolagem::-webkit-scrollbar {
+    width: 6px;
+}
+
+.lista-quantidade-rolagem::-webkit-scrollbar-thumb {
+    background: #1565c0;
+    border-radius: 10px;
+}
+
+.lista-quantidade-rolagem::-webkit-scrollbar-track {
+    background: #eee;
+}
+
+@media (max-width: 992px) {
+    .lista-quantidade {
+        padding: 18px;
+    }
+}
+
+@media (max-width: 768px) {
+    .lista-quantidade {
+        width: 100%;
+        padding: 15px;
+    }
+
+    .lista-quantidade h3 {
+        text-align: center;
+        font-size: 16px;
+    }
+
+    .lista-quantidade-colunas {
+        grid-template-columns: 1fr;
+        gap: 18px;
+    }
+
+    .lista-quantidade-rolagem {
+        max-height: 300px;
+    }
+
+    .lista-quantidade-nome {
+        font-size: 13px;
+    }
+
+    .lista-quantidade-valor,
+    .lista-quantidade-ano {
+        font-size: 12px;
+    }
+}
+
+@media (max-width: 480px) {
+    .lista-quantidade {
+        padding: 12px;
+    }
+
+    .lista-quantidade h3 {
+        font-size: 15px;
+    }
+
+    .lista-quantidade-rolagem {
+        max-height: 260px;
+    }
+
+    .lista-quantidade-nome {
+        font-size: 12px;
+    }
+}

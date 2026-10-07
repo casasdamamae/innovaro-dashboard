@@ -25,6 +25,7 @@ type BarChartCardProps = {
     eixo: string;
     valor: string;
     horizontal?: boolean;
+    altura?: number;
     series?: readonly SerieGrafico[];
     onSnapshot?: (imagem: string) => void;
 };
@@ -35,10 +36,12 @@ export default function BarChartCard({
     eixo,
     valor,
     horizontal = false,
+    altura,
     series,
     onSnapshot
 }: BarChartCardProps) {
     const mobile = window.innerWidth <= 768;
+    const alturaGrafico = altura ?? (mobile ? 520 : 380);
     const chartRef = useRef<HTMLDivElement>(null);
 
     function formatarValor(v: string | number | undefined, chave = valor) {
@@ -93,7 +96,7 @@ export default function BarChartCard({
         <div className="chart-card">
             <h3>{titulo}</h3>
             <div ref={chartRef}>
-                <ResponsiveContainer width="100%" height={mobile ? 520 : 380}>
+                <ResponsiveContainer width="100%" height={alturaGrafico}>
                     <BarChart
                         data={[...dados]}
                         layout={horizontal ? "vertical" : "horizontal"}
@@ -126,6 +129,7 @@ export default function BarChartCard({
                             <>
                                 <XAxis
                                     dataKey={eixo}
+                                    interval={0}
                                     tick={{ fontSize: mobile ? 10 : 12 }}
                                 />
 
@@ -223,16 +227,16 @@ export default function BarChartCard({
                                     dataKey={serie.chave}
                                     name={serie.nome}
                                     fill={serie.cor}
-                                    radius={[6, 6, 6, 6]}
-                                    barSize={mobile ? 12 : 16}
+                                    radius={horizontal ? [6, 6, 6, 6] : [6, 6, 0, 0]}
+                                    barSize={horizontal ? (mobile ? 12 : 16) : undefined}
                                 />
                             ))
                         ) : (
                             <Bar
                                 dataKey={valor}
                                 fill="#197602"
-                                radius={[6, 6, 6, 6]}
-                                barSize={mobile ? 16 : 24}
+                                radius={horizontal ? [6, 6, 6, 6] : [6, 6, 0, 0]}
+                                barSize={horizontal ? (mobile ? 16 : 24) : undefined}
                             />
                         )}
                     </BarChart>

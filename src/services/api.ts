@@ -9,8 +9,8 @@ import {
 import type { SessaoAuth } from "../models/types";
 
 const api = axios.create({
-    baseURL: "https://innovaro-powerbi-api.onrender.com"
-    //baseURL: "http://localhost:3000"
+    //baseURL: "https://innovaro-powerbi-api.onrender.com"
+    baseURL: "http://localhost:3000"
 });
 
 let renovacaoEmAndamento: Promise<string> | null = null;
