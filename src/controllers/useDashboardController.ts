@@ -44,6 +44,7 @@ export type DashboardController = {
     setFornecedor: Dispatch<SetStateAction<string>>;
     setSetor: Dispatch<SetStateAction<string>>;
     atualizar: () => Promise<void>;
+    versaoAutomatica: number;
     registrarGraficoLoja: (imagem: string) => void;
 };
 
@@ -63,6 +64,7 @@ export function useDashboardController(): DashboardController {
     const [isRefreshing, setIsRefreshing] = useState(false);
     const [erroInicial, setErroInicial] = useState(false);
     const [graficoLoja, setGraficoLoja] = useState<string | null>(null);
+    const [versaoAutomatica, setVersaoAutomatica] = useState(0);
 
     const dadosRef = useRef<Resumo | null>(null);
     const marcadorRef = useRef<string | null>(null);
@@ -145,6 +147,7 @@ export function useDashboardController(): DashboardController {
             }
 
             if (marcador !== marcadorRef.current) {
+                setVersaoAutomatica((atual) => atual + 1);
                 await atualizar();
             }
         } catch (error) {
@@ -201,6 +204,7 @@ export function useDashboardController(): DashboardController {
         setFornecedor,
         setSetor,
         atualizar,
+        versaoAutomatica,
         registrarGraficoLoja
     };
 }

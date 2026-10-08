@@ -66,7 +66,7 @@ function topDoAno<T extends Desvio>(
 }
 
 export default function Comparativo() {
-    const { loja } = useDashboard();
+    const { loja, versaoAutomatica } = useDashboard();
     const { versaoComparativo } = useOutletContext<ContextoPainel>();
     const [modo, setModo] = useState<ModoComparativo>("dia");
     const [dados, setDados] = useState<Comparativo | null>(null);
@@ -96,7 +96,7 @@ export default function Comparativo() {
         return () => {
             ativo = false;
         };
-    }, [modo, loja, versaoComparativo]);
+    }, [modo, loja, versaoComparativo, versaoAutomatica]);
 
     function escolherModo(proximo: ModoComparativo) {
         setModo((atual) => (atual === proximo ? atual : proximo));
