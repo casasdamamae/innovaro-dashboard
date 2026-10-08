@@ -22,7 +22,11 @@
 
 .comparativo-totais thead th {
     color: #333;
-    font-size: 15px;
+    font-size: 18px;
+    font-weight: 700;
+}
+
+.comparativo-totais tbody td {
     font-weight: 700;
 }
 
@@ -46,5 +50,9 @@
     .comparativo-totais td {
         padding: 10px 12px;
         font-size: 14px;
+    }
+
+    .comparativo-totais thead th {
+        font-size: 16px;
     }
 }

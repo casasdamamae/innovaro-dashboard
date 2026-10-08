@@ -14,6 +14,15 @@ import type { OpcaoFiltro, Resumo, UsuarioSessao } from "../models/types";
 
 const INTERVALO_STATUS_MS = 120000;
 
+function hojeSaoPaulo() {
+    return new Intl.DateTimeFormat("en-CA", {
+        timeZone: "America/Sao_Paulo",
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit"
+    }).format(new Date());
+}
+
 export type DashboardController = {
     dados: Resumo | null;
     isInitialLoading: boolean;
@@ -39,7 +48,7 @@ export type DashboardController = {
 };
 
 export function useDashboardController(): DashboardController {
-    const hoje = useMemo(() => new Date().toISOString().split("T")[0], []);
+    const hoje = useMemo(() => hojeSaoPaulo(), []);
 
     const [inicio, setInicio] = useState(hoje);
     const [fim, setFim] = useState(hoje);

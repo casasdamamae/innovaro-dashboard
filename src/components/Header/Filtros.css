@@ -24,6 +24,10 @@
     margin-bottom: 0;
 }
 
+.filtros .campo-periodo .seletor-data {
+    width: 260px;
+}
+
 .filtros .campo .metas-mes-bloco .metas-mes-painel {
     left: 0;
     width: max-content;
@@ -42,7 +46,8 @@
 
     .filtros .campo,
     .filtros .campo .metas-mes,
-    .filtros .campo .seletor-data {
+    .filtros .campo .seletor-data,
+    .filtros .campo-periodo .seletor-data {
         width: 100%;
     }
 }

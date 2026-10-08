@@ -4,16 +4,23 @@ import { Calendar, ChevronLeft, ChevronRight } from "lucide-react";
 import "./SeletorData.css";
 
 const DIAS_SEMANA = ["D", "S", "T", "Q", "Q", "S", "S"];
+const FUSO = "America/Sao_Paulo";
 
 type SeletorDataProps = {
     id: string;
-    valor: string;
+    inicio: string;
+    fim: string;
     ariaLabel: string;
-    onChange: (valor: string) => void;
+    onChange: (inicio: string, fim: string) => void;
 };
 
-function semHora(data: Date) {
-    return new Date(data.getFullYear(), data.getMonth(), data.getDate());
+function hojeSaoPaulo(agora = new Date()) {
+    return new Intl.DateTimeFormat("en-CA", {
+        timeZone: FUSO,
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit"
+    }).format(agora);
 }
 
 function parseISO(valor: string) {
@@ -50,12 +57,8 @@ function tituloMes(ano: number, mes: number) {
     return `${nome.charAt(0).toLocaleUpperCase("pt-BR")}${nome.slice(1)} ${ano}`;
 }
 
-function mesmoDia(a: Date, b: Date) {
-    return (
-        a.getFullYear() === b.getFullYear() &&
-        a.getMonth() === b.getMonth() &&
-        a.getDate() === b.getDate()
-    );
+function ordenar(a: string, b: string): [string, string] {
+    return a <= b ? [a, b] : [b, a];
 }
 
 function gradeDoMes(ano: number, mes: number) {
@@ -71,7 +74,7 @@ function gradeDoMes(ano: number, mes: number) {
     return dias;
 }
 
-export default function SeletorData({ id, valor, ariaLabel, onChange }: SeletorDataProps) {
+export default function SeletorData({ id, inicio, fim, ariaLabel, onChange }: SeletorDataProps) {
     const raiz = useRef<HTMLDivElement>(null);
     const campo = useRef<HTMLButtonElement>(null);
     const painelId = useId();
@@ -79,25 +82,51 @@ export default function SeletorData({ id, valor, ariaLabel, onChange }: SeletorD
     const [ano, setAno] = useState(() => new Date().getFullYear());
     const [mes, setMes] = useState(() => new Date().getMonth());
     const [foco, setFoco] = useState("");
+    const [rascunho, setRascunho] = useState<{ inicio: string; fim: string | null } | null>(
+        null
+    );
 
-    const selecionada = parseISO(valor);
-    const hoje = semHora(new Date());
+    const hojeIso = hojeSaoPaulo();
+    const hoje = parseISO(hojeIso) ?? new Date();
     const dias = gradeDoMes(ano, mes);
+    const [de, ate] = intervaloVisivel();
+
+    function intervaloVisivel(): [string, string] {
+        if (!rascunho) return ordenar(inicio, fim);
+        if (!rascunho.fim) return [rascunho.inicio, rascunho.inicio];
+        return ordenar(rascunho.inicio, rascunho.fim);
+    }
+
+    function aplicar() {
+        const [proximoInicio, proximoFim] = intervaloVisivel();
+        setRascunho(null);
+        setAberto(false);
+        campo.current?.focus();
+
+        if (proximoInicio !== inicio || proximoFim !== fim) {
+            onChange(proximoInicio, proximoFim);
+        }
+    }
+
+    function descartar() {
+        setRascunho(null);
+        setAberto(false);
+        campo.current?.focus();
+    }
 
     useEffect(() => {
         if (!aberto) return undefined;
 
         function fecharNoClique(evento: MouseEvent) {
             if (!raiz.current?.contains(evento.target as Node)) {
-                setAberto(false);
+                aplicar();
             }
         }
 
         function fecharNoEsc(evento: globalThis.KeyboardEvent) {
             if (evento.key !== "Escape") return;
 
-            setAberto(false);
-            campo.current?.focus();
+            descartar();
         }
 
         document.addEventListener("mousedown", fecharNoClique);
@@ -107,7 +136,7 @@ export default function SeletorData({ id, valor, ariaLabel, onChange }: SeletorD
             document.removeEventListener("mousedown", fecharNoClique);
             document.removeEventListener("keydown", fecharNoEsc);
         };
-    }, [aberto]);
+    }, [aberto, rascunho, inicio, fim, onChange]);
 
     useEffect(() => {
         if (!aberto) return;
@@ -116,16 +145,17 @@ export default function SeletorData({ id, valor, ariaLabel, onChange }: SeletorD
     }, [aberto, foco, ano, mes]);
 
     function abrir() {
-        const base = selecionada ?? hoje;
+        const base = parseISO(inicio) ?? hoje;
         setAno(base.getFullYear());
         setMes(base.getMonth());
         setFoco(formatISO(base));
+        setRascunho(null);
         setAberto(true);
     }
 
     function alternar() {
         if (aberto) {
-            setAberto(false);
+            aplicar();
             return;
         }
 
@@ -133,9 +163,25 @@ export default function SeletorData({ id, valor, ariaLabel, onChange }: SeletorD
     }
 
     function escolher(iso: string) {
-        setAberto(false);
-        campo.current?.focus();
-        if (iso !== valor) onChange(iso);
+        if (!rascunho || rascunho.fim) {
+            setRascunho({ inicio: iso, fim: null });
+            setFoco(iso);
+            return;
+        }
+
+        setRascunho({ inicio: rascunho.inicio, fim: iso });
+        setFoco(iso);
+    }
+
+    function marcarHoje() {
+        const data = parseISO(hojeIso);
+
+        if (data) {
+            setAno(data.getFullYear());
+            setMes(data.getMonth());
+        }
+
+        escolher(hojeIso);
     }
 
     function mudarMes(delta: number) {
@@ -154,7 +200,7 @@ export default function SeletorData({ id, valor, ariaLabel, onChange }: SeletorD
     }
 
     function moverFoco(diasDeslocamento: number) {
-        const base = parseISO(foco) ?? selecionada ?? hoje;
+        const base = parseISO(foco) ?? parseISO(inicio) ?? hoje;
         const proximo = new Date(base);
         proximo.setDate(proximo.getDate() + diasDeslocamento);
         setAno(proximo.getFullYear());
@@ -183,6 +229,10 @@ export default function SeletorData({ id, valor, ariaLabel, onChange }: SeletorD
         moverFoco(diasDeslocamento);
     }
 
+    const rotulo = inicio === fim
+        ? formatExibicao(inicio)
+        : `${formatExibicao(inicio)} – ${formatExibicao(fim)}`;
+
     return (
         <div className="seletor-data metas-mes metas-mes-bloco" ref={raiz}>
             <button
@@ -202,7 +252,7 @@ export default function SeletorData({ id, valor, ariaLabel, onChange }: SeletorD
                     }
                 }}
             >
-                <span className="metas-mes-botao-rotulo">{formatExibicao(valor)}</span>
+                <span className="metas-mes-botao-rotulo">{rotulo}</span>
                 <span className="metas-mes-botao-caret" aria-hidden="true">
                     <Calendar size={18} strokeWidth={2.5} />
                 </span>
@@ -246,16 +296,14 @@ export default function SeletorData({ id, valor, ariaLabel, onChange }: SeletorD
                             <div className="seletor-data-linha" role="row" key={semana}>
                                 {dias.slice(semana * 7, semana * 7 + 7).map((dia) => {
                                     const iso = formatISO(dia);
-                                    const selecionado = selecionada
-                                        ? mesmoDia(dia, selecionada)
-                                        : false;
-                                    const ehHoje = mesmoDia(dia, hoje);
+                                    const selecionado = iso === de || iso === ate;
+                                    const noIntervalo = iso > de && iso < ate;
                                     const outroMes = dia.getMonth() !== mes;
                                     const focado = iso === foco;
                                     const classes = [
                                         "seletor-data-dia",
                                         outroMes ? "seletor-data-dia-outro" : "",
-                                        ehHoje && !selecionado ? "seletor-data-dia-hoje" : "",
+                                        noIntervalo ? "seletor-data-dia-intervalo" : "",
                                         selecionado ? "seletor-data-dia-selecionado" : ""
                                     ]
                                         .filter(Boolean)
@@ -270,7 +318,6 @@ export default function SeletorData({ id, valor, ariaLabel, onChange }: SeletorD
                                             tabIndex={focado ? 0 : -1}
                                             data-foco={focado ? "true" : undefined}
                                             aria-selected={selecionado}
-                                            aria-current={ehHoje ? "date" : undefined}
                                             onClick={() => escolher(iso)}
                                             onKeyDown={(evento) => teclaDoDia(evento, iso)}
                                         >
@@ -283,12 +330,11 @@ export default function SeletorData({ id, valor, ariaLabel, onChange }: SeletorD
                     </div>
 
                     <div className="seletor-data-rodape">
-                        <button
-                            type="button"
-                            className="seletor-data-acao"
-                            onClick={() => escolher(formatISO(hoje))}
-                        >
+                        <button type="button" className="seletor-data-acao" onClick={marcarHoje}>
                             Hoje
+                        </button>
+                        <button type="button" className="seletor-data-ok" onClick={aplicar}>
+                            Ok
                         </button>
                     </div>
                 </div>

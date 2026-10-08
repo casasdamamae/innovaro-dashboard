@@ -120,6 +120,13 @@ export default function Comparativo() {
             >
                 Acumulado do Mês
             </button>
+
+            {carregando && (
+                <span className="comparativo-carregando" role="status" aria-live="polite">
+                    <span className="comparativo-carregando-circulo" aria-hidden="true" />
+                    Carregando…
+                </span>
+            )}
         </div>
     );
 

@@ -33,27 +33,19 @@ export default function Filtros() {
     return (
         <div className="filtros">
             {noDashboard && (
-                <>
-                    <div className="campo">
-                        <label htmlFor="filtro-inicio">Data Inicial</label>
-                        <SeletorData
-                            id="filtro-inicio"
-                            valor={inicio}
-                            ariaLabel="Data Inicial"
-                            onChange={setInicio}
-                        />
-                    </div>
-
-                    <div className="campo">
-                        <label htmlFor="filtro-fim">Data Final</label>
-                        <SeletorData
-                            id="filtro-fim"
-                            valor={fim}
-                            ariaLabel="Data Final"
-                            onChange={setFim}
-                        />
-                    </div>
-                </>
+                <div className="campo campo-periodo">
+                    <label htmlFor="filtro-periodo">Período</label>
+                    <SeletorData
+                        id="filtro-periodo"
+                        inicio={inicio}
+                        fim={fim}
+                        ariaLabel="Período"
+                        onChange={(proximoInicio, proximoFim) => {
+                            setInicio(proximoInicio);
+                            setFim(proximoFim);
+                        }}
+                    />
+                </div>
             )}
 
             <div className="campo">
